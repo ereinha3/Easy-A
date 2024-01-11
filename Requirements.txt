@@ -1,0 +1,8 @@
+
+Project Components:
+
+Web Scraper
+Desktop Graphing Interface
+UI for selecting graphing filters
+
+?Database setup and instructions using MySQL or MongoDB
