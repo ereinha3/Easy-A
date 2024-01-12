@@ -1,0 +1,4 @@
+An incomplete list of ways people want to or feel comfortable contributing to the project, or parts of the project that you are most interested in working in, even if it is fairly new to you. If multiple people are interested in the same thing that is great because we could all use a pointman or three I expect. This is not a concrete specification of responsibilities so much as a brainstorming page. -Morgan
+
+Andrew - Latex
+Morgan - Github and Database integration

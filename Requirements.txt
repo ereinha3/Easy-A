@@ -1,8 +1,9 @@
-
 Project Components:
 
-Web Scraper
+Web Scraper -> Gather new information on natural science professors and their grading.
 Desktop Graphing Interface
 UI for selecting graphing filters
 
-?Database setup and instructions using MySQL or MongoDB
+Initial data file
+
+Possibly: Database setup and instructions using MySQL or MongoDB
