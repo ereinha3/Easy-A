@@ -1,0 +1,22 @@
+Meeting: Tuesdays and Thursdays from 4:45pm to 5:30pm.
+Additional times to be specified as needed.
+
+Record of Meetings:
+
+Jan 11th from 3:00pm to 3:20pm (in class).
+Exchanged contact information, scheduled future meetings.
+Decided to use an incremental approach to development, and that multiple programming languages could be used for the project. For example, that a Python library could be used for the webscraper, which would be used to generate a new data file. Since the graphics and UI code executing from a data file need not have information about how that data was gathered, it could be written in a different language (for example C++) with no consequences. The exact languages to use for what components required further research by the team.
+
+Jan 11th from 4:00pm to 4:30pm (Morgan and Ethan).
+Morgan and Ethan met to test the setup of the group github repository.
+
+Jan 15th from 11:00am to 11:50am.
+Met as a group to discuss deliverables for the upcoming week, and to establish roles for the project. As a result of our meeting:
+
+Python was decided upon as the core language to use throughout the project due to its powerful libraries for data manipulation and graphing.
+Andrew has taken responsibility for matplotlib.
+Ethan and Darby have taken responsibility for creating the UI in tkinter.
+Alex has taken responbility for the webscraper.
+Morgan has taken responsiblity for creating the initial data file, for documenting administrative setup, and for creating diagrams for the software architecture.
+All engineers involved will help each other throughout the project, nowone will work alone.
+Darby Wright set up an SDS over google docs for the group to edit.

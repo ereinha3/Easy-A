@@ -1,9 +1,0 @@
-Project Components:
-
-Web Scraper -> Gather new information on natural science professors and their grading.
-Desktop Graphing Interface
-UI for selecting graphing filters
-
-Initial data file
-
-Possibly: Database setup and instructions using MySQL or MongoDB
