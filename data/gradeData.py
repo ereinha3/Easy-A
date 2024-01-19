@@ -1,4 +1,4 @@
-gradedata = {
+courseDict = {
 	"AA508": [
 		{
 			"TERM_DESC": "Spring 2014", 
