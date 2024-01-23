@@ -1,38 +1,60 @@
-from gradeData import courseDict
-from numpy import mean
-
-def getCourseDepartment(courseName):
-    return ''.join((x for x in courseName if not x.isdigit()))
-
-def getCourseLevel(courseName):
-    return int(''.join((x for x in courseName if x.isdigit())))
+from departmentData import departmentData
+from crnData import crnData
 
 def getCoursesByDepartment(departmentName):
-    courses = courseDict.keys()
-    return [course for course in courses if getCourseDepartment(course) == departmentName]
+    return departmentData[departmentName.upper()]
 
-def filterCoursesByLevel(courseList, level):
-    return [course for course in courseList if getCourseLevel(course) // 100 == level // 100]
+def filterCoursesByLevel(courses, level):
+    return { key: value for key, value in courses.items() if key // 100 == level // 100 }
 
-def getInstructorsByCourse(course):
-    return [courseInstance["instructor"] for courseInstance in courseDict[course]]
+def getCrnsFromCourse(course):
+    return { crn for crn in course }
 
-def getCourseGrades(course):
-    return { key : float(val) for key, val in course.items() if "prec" in key }
+def getCrnsFromCourses(courses):
+    crns = set()
+    for value in courses.values():
+        for crn in value:
+            crns.add(crn)
+    return crns
 
-def getAllDepartments():
-    return { getCourseDepartment(key) for key in courseDict }
+def getGradeDataFromCrn(crn: int):
+    return crnData[crn]
 
-def breakCoursesByDepartmentAndLevel():
-    newDict = { department : { getCourseLevel(course) : courseDict[course] for course in courseDict if getCourseDepartment(course) == department } for department in getAllDepartments() }
-    f = open("newDict.py", 'w')
-    f.write(str(newDict))
-    f.close()
+def getInstructorsByCrns(crns: {int}):
+    return { crnData[crn]["instructor"] for crn in crns }
 
-#breakCoursesByDepartmentAndLevel()
+def accum(currentDict, newDict):
+    if not currentDict:
+        currentDict = newDict
+        return currentDict
 
-#Example for quick testing
-#MathCourses = getCoursesByDepartment("MATH")
-#Math200 = filterCoursesByLevel(MathCourses, 200)
-#getInstructorsByCourse(Math200[0])
-#print(getCourseGrades(courseDict[Math200[0]][0]))
+    for key in currentDict.keys():
+        if key in newDict:
+            currentDict[key] += newDict[key]
+    return currentDict
+
+def groupByInstructor(crns: {int}):
+    instructors = {}
+    for crn in crns:
+        instructorName = crnData[crn]["instructor"]
+        gradeData = {"courseCount": 1} | {key: float(value) for key, value in crnData[crn].items() if 'prec' in key}
+        if instructorName not in instructors:
+            instructors[instructorName] = gradeData
+        else:
+            instructors[instructorName] = accum(instructors[instructorName], gradeData)
+    return instructors
+
+def aggData(groupByData):
+    for key, value in groupByData.items():
+        courseCount = groupByData[key]["courseCount"]
+        groupByData[key].update({key: value / courseCount for key, value in groupByData[key].items() if "prec" in key})
+    return groupByData
+
+math = getCoursesByDepartment("math")
+math100 = filterCoursesByLevel(math, 100)
+math100instructors = groupByInstructor(getCrnsFromCourses(math100))
+agg = aggData(math100instructors)
+for key, value in agg.items():
+    if value["courseCount"] > 1:
+        print(key, value)
+#print(getCrnsFromCourses(math100))
