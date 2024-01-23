@@ -20,8 +20,19 @@ def getInstructorsByCourse(course):
 def getCourseGrades(course):
     return { key : float(val) for key, val in course.items() if "prec" in key }
 
+def getAllDepartments():
+    return { getCourseDepartment(key) for key in courseDict }
+
+def breakCoursesByDepartmentAndLevel():
+    newDict = { department : { getCourseLevel(course) : courseDict[course] for course in courseDict if getCourseDepartment(course) == department } for department in getAllDepartments() }
+    f = open("newDict.py", 'w')
+    f.write(str(newDict))
+    f.close()
+
+#breakCoursesByDepartmentAndLevel()
+
 #Example for quick testing
-MathCourses = getCoursesByDepartment("MATH")
-Math200 = filterCoursesByLevel(MathCourses, 200)
-getInstructorsByCourse(Math200[0])
-print(getCourseGrades(courseDict[Math200[0]][0]))
+#MathCourses = getCoursesByDepartment("MATH")
+#Math200 = filterCoursesByLevel(MathCourses, 200)
+#getInstructorsByCourse(Math200[0])
+#print(getCourseGrades(courseDict[Math200[0]][0]))
