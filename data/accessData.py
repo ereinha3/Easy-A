@@ -1,5 +1,6 @@
 from departmentData import departmentData
 from crnData import crnData
+from naturalSci import depts_dict
 
 def getCoursesByDepartment(departmentName):
     return departmentData[departmentName.upper()]
@@ -22,6 +23,22 @@ def getGradeDataFromCrn(crn: int):
 
 def getInstructorsByCrns(crns: {int}):
     return { crnData[crn]["instructor"] for crn in crns }
+
+def getScienceDepts():
+    return [depts_dict[key] for key in depts_dict.keys() if key in departmentData.keys()]   
+
+def getCodefromDeptName(name):
+    items = depts_dict.items()
+    if name != "None":
+        for key, val in depts_dict.items():
+            if val == name:
+                return key
+
+def getLevelsfromDeptCode(code):
+    lvls = set()
+    for key in departmentData[code]:
+        lvls.add(str(key)[:1]+"00-Level")
+    return lvls
 
 def accum(currentDict, newDict):
     if not currentDict:
@@ -58,3 +75,5 @@ for key, value in agg.items():
     if value["courseCount"] > 1:
         print(key, value)
 #print(getCrnsFromCourses(math100))
+#print(getScienceDepts())
+print(departmentData["CIS"].keys())

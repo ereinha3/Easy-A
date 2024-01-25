@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 import requests
 import re
 import time
+from naturalSci import depts_dict
 
 # constants
 NATURAL_SCI_FILEPATH = "naturalSci.txt"
@@ -30,8 +31,9 @@ def get_dept_url_list(catalog_url: str, dept_names_filepath: str) -> list[str]:
     soup = BeautifulSoup(page.content, "html.parser")
 
     # get names of natural sciences
-    target_depts_list = open(dept_names_filepath, "r").readlines()
-    target_depts_list = [item.strip() for item in target_depts_list]
+    #target_depts_list = open(dept_names_filepath, "r").readlines()
+    #target_depts_list = [item.strip() for item in target_depts_list]
+    target_depts_list = depts_dict.values()
 
     # list of department pages
     dept_list_container = soup.find("ul", id="/arts_sciences/", class_="nav")
@@ -57,15 +59,18 @@ def get_names_from_dept(dept_url: str) -> list[str]:
     soup = BeautifulSoup(page.content, "html.parser")
 
     # go to the header text for the faculty list 
+    print(dept_url +  "...checking")
     text_container = soup.find("div", id="facultytextcontainer")
-    faculty_header = text_container.find(["h2", "h3"], string=FACULTY_MATCH_TEXT)
-
-    # collect names until we hit the next header
     faculty_list = []
-    curr_element = faculty_header.find_next()
-    while (curr_element.get("class") == ["facultylist"]):
-        faculty_list.append(curr_element.text.split(',')[0])
-        curr_element = curr_element.find_next()
+
+    if text_container:
+        faculty_header = text_container.find(["h2", "h3"], string=FACULTY_MATCH_TEXT)
+
+        # collect names until we hit the next header
+        curr_element = faculty_header.find_next()
+        while (curr_element.get("class") == ["facultylist"]):
+            faculty_list.append(curr_element.text.split(',')[0])
+            curr_element = curr_element.find_next()
 
     return faculty_list
 
