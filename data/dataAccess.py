@@ -21,16 +21,15 @@ def get_crns_from_courses(courses):
             crns.add(crn)
     return crns
 
-def get_grade_data_from_crn(crn: int):
-    return crnData[crn]
+def filter_by_faculty_only(crns: set[int]):
+    """Not yet implemented"""
+    return False
 
-def get_instructors_by_crns(crns: {int}):
-    return { crnData[crn]["instructor"] for crn in crns }
-
-def filter_by_faculty_only():
-    return True
-
-def accum(currentDict, newDict):
+def accum(currentDict: dict[str, int], newDict: dict[str, int]) -> dict[str, int]:
+    """
+    Adds the values of two dictionaries together together.
+    If the currentDict does not have the value instead instantialize it.
+    """
     if not currentDict:
         currentDict = newDict
         return currentDict
@@ -40,11 +39,11 @@ def accum(currentDict, newDict):
             currentDict[key] += newDict[key]
     return currentDict
 
-def group_by(groupKey: str, crns: {int}):
+def group_by(groupKey: str, crns: set[int]):
     groupByData = {}
     for crn in crns:
         entryName = crnData[crn][groupKey]
-        gradeData = {"courseCount": 1} | {key: float(value) for key, value in crnData[crn].items() if 'prec' in key}
+        gradeData = {"course_count": 1} | {key: float(value) for key, value in crnData[crn].items() if 'prec' in key}
         if entryName not in groupByData:
             groupByData[entryName] = gradeData
         else:
@@ -53,36 +52,51 @@ def group_by(groupKey: str, crns: {int}):
 
 def agg_data(groupByData):
     for key, value in groupByData.items():
-        courseCount = groupByData[key]["courseCount"]
+        courseCount = groupByData[key]["course_count"]
         groupByData[key].update({key: value / courseCount for key, value in groupByData[key].items() if "prec" in key})
     return groupByData
 
-def query_graphing_data(department: str, level: int, groupKey: str, filterFaculty: bool):
+def query_graphing_data(department: str, level: int = -1, groupKey: str = "instructor", filterFaculty: bool = False):
+    """
+    Return a dictionary of the following format:
+    'groupName': {
+        'course_count':  int(total number of courses in the group) 
+        'aprec':         mean(aprec aggregated by groupKey)
+        'bprec':         mean(bprec aggregated by groupKey)
+        'cprec':         mean(cprec aggregated by groupKey)
+        'dprec':         ...
+        'fprec':         ...
+    }
+
+    Keyword arguments:
+    department     -- name of the department to query data from
+    groupKey       -- name of the data field to group by, options include 'instructor' and 'course_name'
+    filterFaculty  -- whether or not to apply the faculty only filter before aggregating data
+    level          -- level of the course to query data from, if the course level is 100, 200, 300, 400, 500 or 600
+                      you will instead query all data from all courses at that level
+                      leave the default (-1) if you want to query all courses in the department (choose not to filter by level)
+    """
     courses = get_courses_by_department(department)
+    crns = set()
+
+    #get all courses in the given level
     if (level % 100 == 0):
         courses = filter_courses_by_level(courses, level)
+        crns = get_crns_from_courses(courses)
+
+    #get only the specified course
     elif (level % 100 > 0):
-        courses = set(courses[level])
-    crns = get_crns_from_courses(courses)
-    crns = filterByFacultyOnly(crns) if filterFaculty else crns
+        courses = courses[level]
+        crns = get_crns_from_course(courses)
+
+    #if level is negative then no filtering is done, just keep all courses in the department
+
+    #apply faculty only filter if given
+    crns = filter_by_faculty_only(crns) if filterFaculty else crns
     return agg_data(group_by(groupKey, crns))
 
-#Entry Point Functions for Main Data Get
-#Fetch gradeData by instructor
-#Get crn set of courses (getCrnsByDepartment, byDepartmentLevel or byBource)
-#Filter by faculty only (if true)
-
 if __name__ == "__main__":
-    data = query_graphing_data("math", 100, "course_name", False)
+    #Example use for demonstration
+    data = query_graphing_data("math", 100, "instructor", False)
     for key, value in data.items():
         print(key, value)
-'''
-math = get_courses_by_department("math")
-    math100 = filter_courses_by_level(math, 100)
-    math100instructors = group_by("instructor", get_crns_from_courses(math100))
-    agg = agg_data(math100instructors)
-    for key, value in agg.items():
-        if value["courseCount"] > 1:
-            print(key, value)
-#print(get_crns_from_courses(math100))
-'''
