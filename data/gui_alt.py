@@ -1,6 +1,5 @@
 from tkinter import *
 from tkinter.ttk import *
-# import dataAccess as data
 import naturalSci
 
 #------------------------------------------------------------------------------
@@ -19,27 +18,14 @@ window.rowconfigure(4, weight=5)
 window.rowconfigure(5, weight=6)
 
 #------------------------------------------------------------------------------
+# Setting up Different Styles
+style = Style()
+style.configure("Label", foreground="black", background="black", highlightbackground="blue")
+
+#------------------------------------------------------------------------------
 # Helper Functions
 def mode_selection():
-    # Does the initial mode selection between Student/Admin
-    modeFrame = Frame(window)
-    modeFrame.columnconfigure(0, weight=1)
-    modeFrame.rowconfigure(0, weight=1)
-
-    modeLabel = Label(
-        modeFrame,
-        text="Are You a Student or an Administrator?")
-    
-    studentButton = Button(
-        modeFrame,
-        text="Student",
-        command=lambda: enter_student_mode(modeFrame))
-    
-    adminButton = Button(
-        modeFrame,
-        text="Admin",
-        command=lambda: enter_admin_mode(modeFrame))
-    
+    # Displays initial Mode Selector Frame 
     modeLabel.grid(row=0, column=0)
     studentButton.grid(row=1, column=0, sticky="news")
     adminButton.grid(row=2, column=0, sticky="news")
@@ -105,13 +91,29 @@ def selection(choice):
         generateButton.grid(row=0, column=0)
         generateFrame.grid(row=5, column=0, sticky="news")
 
-    # if choice == "Faculty Selected":
-    #     print(choice)
-    # if choice == "Count Selected":
-    #     print(choice)
-
 
 # All Frames are Created Below. They are not added to the Grid until they are needed
+#------------------------------------------------------------------------------
+# Mode Selection Frame
+modeFrame = Frame(window, style="BW.TLabel")
+modeFrame.columnconfigure(0, weight=1)
+modeFrame.rowconfigure(0, weight=1)
+
+modeLabel = Label(
+    modeFrame,
+    style="Label",
+    text="Are You a Student or an Administrator?")
+    
+studentButton = Button(
+    modeFrame,
+    text="Student",
+    command=lambda: enter_student_mode(modeFrame))
+    
+adminButton = Button(
+    modeFrame,
+    text="Admin",
+    command=lambda: enter_admin_mode(modeFrame))
+
 #------------------------------------------------------------------------------
 # Department Selection Dropdown Menu Frame
 departmentFrame = Frame(window)
@@ -220,7 +222,6 @@ facultyCheckbox = Checkbutton(
     variable=facultyVar,
     onvalue=1,
     offvalue=0)
-    #command=lambda: selection("Faculty Selected"))
 
 countCheckbox = Checkbutton(
     checkboxFrame,
@@ -228,7 +229,6 @@ countCheckbox = Checkbutton(
     variable=countVar,
     onvalue=1,
     offvalue=0)
-    #command=lambda: selection("Count Selected"))
 
 #------------------------------------------------------------------------------
 # Generate Button Frame
@@ -242,6 +242,7 @@ generateButton = Button(
     command=generate_graph)
 
 #------------------------------------------------------------------------------
+
 
 mode_selection()
 # infinite loop 
