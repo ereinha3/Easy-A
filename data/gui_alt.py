@@ -38,6 +38,9 @@ def display_choices(choice):
     # Arangement of Frame Itself
     compareByFrame.grid(row=2, column=0, sticky="news")
 
+def generate_graph():
+    print("Data needs to be gathered and then its Graphing Time")
+
 def pressed(choice):
     if choice == "instructor" or choice == "course":
         print(choice)
@@ -55,6 +58,14 @@ def pressed(choice):
         countCheckbox.grid(row=2, column=0)
         # Arangement of Frame Itself
         checkboxFrame.grid(row=4, column=0, sticky="news")
+
+        # Once the last manditory option has been selected, add "Generate Button"
+        generateButton = Button(
+            window,
+            text="Generate Graph",
+            command=generate_graph)
+        
+        generateButton.grid(row=5, column=0, sticky="news")
 
     if choice == "Faculty Selected":
         print(choice)
