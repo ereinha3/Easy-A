@@ -7,7 +7,7 @@ import naturalSci
 window = Tk()
 window.title('Grade Display')
 window.config(bg='grey')
-window.minsize(width=250, height=250)
+# window.minsize(width=250, height=250)
 
 window.columnconfigure(0, weight=1)
 window.rowconfigure(0, weight=1)
@@ -15,10 +15,51 @@ window.rowconfigure(1, weight=1)
 window.rowconfigure(2, weight=1)
 window.rowconfigure(3, weight=1)
 window.rowconfigure(4, weight=1)
-
+window.rowconfigure(5, weight=1)
 
 #------------------------------------------------------------------------------
 # Helper Functions
+def mode_selection():
+    modeFrame = Frame(window, background="ivory2")
+    modeFrame.columnconfigure(0, weight=1)
+    modeFrame.rowconfigure(0, weight=1)
+
+    modeLabel = Label(
+        modeFrame,
+        text="Are You a Student or an Administrator?")
+    studentButton = Button(
+        modeFrame,
+        text="Student",
+        highlightbackground='blue',
+        relief="raised",
+        command=lambda: enter_student_mode(modeFrame))
+    adminButton = Button(
+        modeFrame,
+        text="Admin",
+        highlightbackground="red",
+        relief="raised",
+        command=lambda: enter_admin_mode(modeFrame))
+    
+    modeLabel.grid(row=0, column=0)
+    studentButton.grid(row=1, column=0, sticky="news")
+    adminButton.grid(row=2, column=0, sticky="news")
+    modeFrame.grid(row=0, column=0, sticky="news")
+
+def enter_student_mode(frame):
+    frame.destroy()
+    # Arangement of Widgets within Frame
+    deptLabel.grid(row=0, column=0, sticky="news")
+    deptMenu.grid(row=1, column=0, sticky="news")
+    # Arangement of Frame Itself
+    deptFrame.grid(row=0, column=0, sticky="news")
+    
+def enter_admin_mode(frame):
+    frame.destroy()
+    adminFrame = Frame(window)
+    adminFrame.columnconfigure(0, weight=1)
+    adminFrame.rowconfigure(0, weight=1)
+    print("Entered Admin Mode")
+
 def display_level(choice):
     dept_choice = dept_selected.get()
     print(dept_choice)
@@ -26,7 +67,7 @@ def display_level(choice):
     levelLabel.grid(row=0)
     levelMenu.grid(row=1)
     # Arangement of Frame Itself
-    levelFrame.grid(row=1, column=0,sticky="news")
+    levelFrame.grid(row=1, column=0, sticky="news")
 
 def display_choices(choice):
     level_choice = level_selected.get()
@@ -35,46 +76,46 @@ def display_choices(choice):
     compareByLabel.grid(row=1, column=0, columnspan=1)
     instructorButton.grid(row=2, column=0)
     courseButton.grid(row=3, column=0)
-    # Arangement of Frame Itself
+    # Arangement of Frame within Window
     compareByFrame.grid(row=2, column=0, sticky="news")
 
 def generate_graph():
     print("Data needs to be gathered and then its Graphing Time")
 
 def pressed(choice):
-    if choice == "instructor" or choice == "course":
+    if choice == "Instructor" or choice == "Course":
         print(choice)
-            # Aragement of widgets within Frame
+        # Aragement of widgets within Frame
         dataTypeLabel.grid(row=1, column=0, columnspan=1)
         aButton.grid(row=2, column=0)
         dfButton.grid(row=3, column=0)
-        # Arangement of Frame Itself
+        # Arangement of Frame within Window
         dataTypeFrame.grid(row=3, column=0, sticky="news")
 
     if choice == "A" or choice == "D/F":
         print(choice)
-        # Aragement of widgets within Frame
+        # Aranging Widgets and Frame
         facultyCheckbox.grid(row=1, column=0)
         countCheckbox.grid(row=2, column=0)
-        # Arangement of Frame Itself
         checkboxFrame.grid(row=4, column=0, sticky="news")
 
-        # Once the last manditory option has been selected, add "Generate Button"
-        generateButton = Button(
-            window,
-            text="Generate Graph",
-            command=generate_graph)
-        
-        generateButton.grid(row=5, column=0, sticky="news")
+        # Also include Generate button since count/faculty is optional
+        generateButton.grid(row=0, column=0)
+        generateFrame.grid(row=5, column=0, sticky="news")
 
     if choice == "Faculty Selected":
         print(choice)
     if choice == "Count Selected":
         print(choice)
 
+
+# All Frames are Created Below. They are not added to the Grid until they are needed
 #------------------------------------------------------------------------------
 # Department Selection Dropdown Menu
-deptFrame = Frame(window)
+deptFrame = Frame(window, background="ivory3")
+deptFrame.columnconfigure(0, weight=1)
+deptFrame.rowconfigure(0, weight=1)
+
 deptLabel = Label(
     deptFrame,
     text="Select a Department",
@@ -86,27 +127,18 @@ deptMenu = OptionMenu(
     deptFrame, 
     dept_selected, 
     *science_depts, 
-    command=display_level) # 
-
-deptFrame.columnconfigure(0, weight=1)
-deptFrame.rowconfigure(0, weight=1)
-
-# Arangement of Widgets within Frame
-deptLabel.grid(row=0, column=0)
-deptMenu.grid(row=1, column=0)
-# Arangement of Frame Itself
-deptFrame.grid(row=0, column=0, sticky="news")
+    command=display_level)
 
 #------------------------------------------------------------------------------
-# Course Level Dropdown Menu
-levelFrame = Frame(window)
+# Course Level Dropdown Menu Frame
+levelFrame = Frame(window, background="ivory2")
+levelFrame.columnconfigure(0, weight=1)
+levelFrame.rowconfigure(0, weight=1)
+
 levelLabel = Label(
     levelFrame,
     text="Select a Level")
 level_selected = StringVar()
-# dept_selected_code = data.get_courses_by_department(dept_selected.get())
-# levels = sorted(data.getLevelsfromDeptCode(dept_selected_code))
-# levels.append("All")
 levels = ["100-Level", "200-Level", "300-Level", "400-Level", "500-Level", "600-Level", "700-Level", "All"]
 level_selected.set("All")
 levelMenu = OptionMenu(
@@ -115,12 +147,12 @@ levelMenu = OptionMenu(
     *levels,
     command=display_choices)
 
-levelFrame.columnconfigure(0, weight=1)
-levelFrame.rowconfigure(0, weight=1)
-
 #------------------------------------------------------------------------------
 # X-Axis Selection Frame
-compareByFrame = Frame(window)
+compareByFrame = Frame(window, background="ivory3")
+compareByFrame.columnconfigure(0, weight=1)
+compareByFrame.rowconfigure(0, weight=1)
+
 compareByVar = IntVar()
 compareByLabel = Label(
     compareByFrame,
@@ -131,26 +163,25 @@ instructorButton = Radiobutton(
     text = "Instructor",
     variable=compareByVar,
     value=1,
-    command=lambda: pressed("instructor"))
+    command=lambda: pressed("Instructor"))
 
 courseButton = Radiobutton(
     compareByFrame,
     text = "Course",
     variable=compareByVar,
     value=2,
-    command= lambda: pressed("course"))
-
-compareByFrame.columnconfigure(0, weight=1)
-compareByFrame.rowconfigure(0, weight=1)
+    command= lambda: pressed("Course"))
 
 #------------------------------------------------------------------------------
 # Y-Axis Selection Frame
-dataTypeFrame = Frame(window)
+dataTypeFrame = Frame(window, background="ivory2")
+dataTypeFrame.columnconfigure(0, weight=1)
+dataTypeFrame.rowconfigure(0, weight=1)
+
 dataTypeVar = IntVar()
 dataTypeLabel = Label(
     dataTypeFrame,
-    text="Compare Percentage of A's or D's/F's"
-)
+    text="Compare Percentage of A's or D's/F's")
 aButton = Radiobutton(
     dataTypeFrame,
     text = "A's",
@@ -165,12 +196,12 @@ dfButton = Radiobutton(
     value=2,
     command= lambda: pressed("D/F"))
 
-dataTypeFrame.columnconfigure(0, weight=1)
-dataTypeFrame.rowconfigure(0, weight=1)
-
 #------------------------------------------------------------------------------
-# Check for Regular Faculty vs All and Choice to Display Count
-checkboxFrame = Frame(window)
+# Check for Regular Faculty vs All and Choice to Display Count Frame
+checkboxFrame = Frame(window, background="ivory3")
+checkboxFrame.columnconfigure(0, weight=1)
+checkboxFrame.rowconfigure(0, weight=1)
+
 facultyVar = IntVar()
 countVar = IntVar()
 facultyCheckbox = Checkbutton(
@@ -188,9 +219,18 @@ countCheckbox = Checkbutton(
     offvalue=0,
     command=lambda: pressed("Count Selected"))
 
-checkboxFrame.columnconfigure(0, weight=1)
-checkboxFrame.rowconfigure(0, weight=1)
+#------------------------------------------------------------------------------
+# Generate Button Frame
+generateFrame = Frame(window, background="ivory2")
+generateFrame.columnconfigure(0, weight=1)
+generateFrame.rowconfigure(0, weight=1)
 
+generateButton = Button(
+    generateFrame,
+    text="Generate Graph",
+    relief="raised",
+    command=generate_graph)
 
+mode_selection()
 # infinite loop 
 window.mainloop()
