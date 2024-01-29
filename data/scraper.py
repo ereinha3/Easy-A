@@ -7,7 +7,8 @@ Scrapes web archive of UO Catalog to find names of full-time faculty.
 """
 
 from bs4 import BeautifulSoup
-import requests
+import urllib.request
+from urllib.request import Request, urlopen
 import re
 import time
 from naturalSci import depts_dict
@@ -17,7 +18,33 @@ NATURAL_SCI_FILEPATH = "naturalSci.txt"
 CATALOG_URL = "https://web.archive.org/web/20140901091007/http://catalog.uoregon.edu/arts_sciences/"
 URL_DOMAIN_PREFIX = "https://web.archive.org"
 FACULTY_MATCH_TEXT = re.compile(".*Faculty.*")
-INTERNET_REQUEST_DELAY = 1
+INTERNET_REQUEST_DELAY = 5
+
+def get_html(url: str) -> str:
+    """
+    Given the URL, return the HTML content of a webpage.
+    """
+    # use a non-suspicious use agent to reduce chances of being denied
+    request = Request(url, headers={
+        'User-agent' : 'Mozilla/5.0 (X11; Linux x86_64; rv:122.0) Gecko/20100101 Firefox/122.0'})
+    response = urlopen(request)
+    response_content = response.read()
+    html_content = response_content.decode("utf-8")
+    response.close()
+    return html_content
+
+    """
+    page = urllib.request.urlopen(url)
+    return page.read()
+    """
+    """
+    response = urllib.request.urlopen(url)
+    response_contents = response.read()
+    # decode bytearray type
+    html_content = response_contents.decode("utf8")
+    response.close()
+    return html_content
+    """
 
 
 def get_dept_url_list(catalog_url: str, dept_names_filepath: str) -> list[str]:
@@ -27,8 +54,8 @@ def get_dept_url_list(catalog_url: str, dept_names_filepath: str) -> list[str]:
     Populate and return list of URLs for those departments.
     """
     # get page content in BeautifulSoup
-    page = requests.get(CATALOG_URL)
-    soup = BeautifulSoup(page.content, "html.parser")
+    page = get_html(CATALOG_URL)
+    soup = BeautifulSoup(page, "html.parser")
 
     # get names of natural sciences
     #target_depts_list = open(dept_names_filepath, "r").readlines()
@@ -55,8 +82,8 @@ def get_names_from_dept(dept_url: str) -> list[str]:
     Return list of names of full-time faculty in that department.
     """
     # get page content in BeautifulSoup
-    page = requests.get(dept_url)
-    soup = BeautifulSoup(page.content, "html.parser")
+    page = get_html(dept_url)
+    soup = BeautifulSoup(page, "html.parser")
 
     # go to the header text for the faculty list 
     print(dept_url +  "...checking")
@@ -80,7 +107,6 @@ def main() -> None:
     """
 
     # get department URLs
-    page = requests.get(CATALOG_URL)
     dept_url_list = get_dept_url_list(CATALOG_URL, NATURAL_SCI_FILEPATH)
 
     # (temporary) print department URLs
@@ -98,6 +124,7 @@ def main() -> None:
     # (temporary) print all names
     print(names_list)
     print(f"Found a total of {len(names_list)} names")
+
 
 if __name__ == "__main__":
     main()
