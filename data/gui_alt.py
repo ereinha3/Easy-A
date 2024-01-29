@@ -1,5 +1,6 @@
 from tkinter import *
-import dataAccess as data
+from tkinter.ttk import *
+# import dataAccess as data
 import naturalSci
 
 #------------------------------------------------------------------------------
@@ -11,17 +12,17 @@ window.config(bg='grey')
 
 window.columnconfigure(0, weight=1)
 window.rowconfigure(0, weight=1)
-window.rowconfigure(1, weight=1)
-window.rowconfigure(2, weight=1)
-window.rowconfigure(3, weight=1)
-window.rowconfigure(4, weight=1)
-window.rowconfigure(5, weight=1)
+window.rowconfigure(1, weight=2)
+window.rowconfigure(2, weight=3)
+window.rowconfigure(3, weight=4)
+window.rowconfigure(4, weight=5)
+window.rowconfigure(5, weight=6)
 
 #------------------------------------------------------------------------------
 # Helper Functions
 def mode_selection():
     # Does the initial mode selection between Student/Admin
-    modeFrame = Frame(window, background="ivory2")
+    modeFrame = Frame(window)
     modeFrame.columnconfigure(0, weight=1)
     modeFrame.rowconfigure(0, weight=1)
 
@@ -32,15 +33,11 @@ def mode_selection():
     studentButton = Button(
         modeFrame,
         text="Student",
-        highlightbackground='blue',
-        relief="raised",
         command=lambda: enter_student_mode(modeFrame))
     
     adminButton = Button(
         modeFrame,
         text="Admin",
-        highlightbackground="red",
-        relief="raised",
         command=lambda: enter_admin_mode(modeFrame))
     
     modeLabel.grid(row=0, column=0)
@@ -51,9 +48,9 @@ def mode_selection():
 def enter_student_mode(frame):
     print("Entered Student Mode")
     frame.destroy()
-    deptLabel.grid(row=0, column=0, sticky="news")
-    deptMenu.grid(row=1, column=0, sticky="news")
-    deptFrame.grid(row=0, column=0, sticky="news")
+    departmentLabel.grid(row=0)
+    departmentMenu.grid(row=1)
+    departmentFrame.grid(row=0, sticky="news")
     
 def enter_admin_mode(frame):
     print("Entered Admin Mode")
@@ -117,28 +114,28 @@ def selection(choice):
 # All Frames are Created Below. They are not added to the Grid until they are needed
 #------------------------------------------------------------------------------
 # Department Selection Dropdown Menu Frame
-deptFrame = Frame(window, background="ivory3")
-deptFrame.columnconfigure(0, weight=1)
-deptFrame.rowconfigure(0, weight=1)
+departmentFrame = Frame(window)
+departmentFrame.columnconfigure(0, weight=1)
+departmentFrame.rowconfigure(0, weight=1)
 
-deptLabel = Label(
-    deptFrame,
+departmentLabel = Label(
+    departmentFrame,
     text="Select a Department",
 )
 
 departmentVar = StringVar()
-science_depts = list(naturalSci.depts_dict.values())
-departmentVar.set(science_depts[0])
+departments = list(naturalSci.depts_dict.values())
+departmentVar.set(departments[0])
 
-deptMenu = OptionMenu(
-    deptFrame, 
-    departmentVar, 
-    *science_depts, 
+departmentMenu = OptionMenu(
+    departmentFrame,
+    departmentVar,
+    *departments,
     command=display_level)
 
 #------------------------------------------------------------------------------
 # Course Level Dropdown Menu Frame
-levelFrame = Frame(window, background="ivory2")
+levelFrame = Frame(window)
 levelFrame.columnconfigure(0, weight=1)
 levelFrame.rowconfigure(0, weight=1)
 
@@ -158,7 +155,7 @@ levelMenu = OptionMenu(
 
 #------------------------------------------------------------------------------
 # X-Axis Selection Frame (Instructors or Courses)
-xAxisFrame = Frame(window, background="ivory3")
+xAxisFrame = Frame(window)
 xAxisFrame.columnconfigure(0, weight=1)
 xAxisFrame.rowconfigure(0, weight=1)
 
@@ -184,7 +181,7 @@ courseButton = Radiobutton(
 
 #------------------------------------------------------------------------------
 # Y-Axis Selection Frame (A's or D's/F's)
-yAxisFrame = Frame(window, background="ivory2")
+yAxisFrame = Frame(window)
 yAxisFrame.columnconfigure(0, weight=1)
 yAxisFrame.rowconfigure(0, weight=1)
 
@@ -210,7 +207,7 @@ dfButton = Radiobutton(
 
 #------------------------------------------------------------------------------
 # Regular Faculty and Count Frame
-checkboxFrame = Frame(window, background="ivory3")
+checkboxFrame = Frame(window)
 checkboxFrame.columnconfigure(0, weight=1)
 checkboxFrame.rowconfigure(0, weight=1)
 
@@ -235,14 +232,13 @@ countCheckbox = Checkbutton(
 
 #------------------------------------------------------------------------------
 # Generate Button Frame
-generateFrame = Frame(window, background="ivory2")
+generateFrame = Frame(window)
 generateFrame.columnconfigure(0, weight=1)
 generateFrame.rowconfigure(0, weight=1)
 
 generateButton = Button(
     generateFrame,
     text="Generate Graph",
-    relief="raised",
     command=generate_graph)
 
 #------------------------------------------------------------------------------
