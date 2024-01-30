@@ -1,4 +1,4 @@
-from ./raw_data/gradeDict import gradeDict
+from gradeDict import gradeDict
 
 def get_courses_by_department(departmentName: str) -> dict[dict]:
 	"""Returns all courses in a department."""
@@ -7,6 +7,15 @@ def get_courses_by_department(departmentName: str) -> dict[dict]:
 def filter_courses_by_level(courses: dict[dict], level: int) -> dict[dict]:
 	"""Returns a filtered set of courses within a department to include only those within the given level."""
 	return { key: value for key, value in courses.items() if key // 100 == level // 100 }
+
+def get_course_numbers_by_department(departmentName: str) -> list[int]:
+    return [ courseNumber for courseNumber in gradeDict[departmentName].keys() ]
+
+def get_course_numbers_by_department_level(departmentName: str, level: int) -> list[int]:
+    return [ courseNumber for courseNumber in gradeDict[departmentName].keys() if courseNumber // 100 == level // 100 ]
+
+def get_department_names() -> list[str]:
+    return [ name for name in gradeDict.keys() ]
 
 def filter_by_faculty_only(crns: set[int]):
 	"""Not yet implemented"""

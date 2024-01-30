@@ -42,4 +42,4 @@ def write_dict_to_file(dataName: str, dataBody: dict, filename: str):
     f.write(dataName + " = " + str(dataBody))
     f.close()
 
-write_dict_to_file("gradeDict", create_grade_dict(), "./raw_data/gradeDict.py")
+write_dict_to_file("gradeDict", create_grade_dict(), "gradeDict.py")
