@@ -1,4 +1,19 @@
-from gradeData import courseDict
+"""
+Author: Morgan Jones
+
+The purpose of this file is to intake a gradedata.js file (supplied by daily emerald) and to translate that javascript object into a python dictionary for use by the data access module.
+"""
+
+f = open("gradedata.js", "r")
+data = f.read()
+f.close()
+
+begin = data.index("{")
+end = data.index(";")
+data = data[begin:end]
+
+#Translate the data string into a valid dictionary object.
+courseDict = eval(data)
 
 def get_course_department(courseName: str) -> str:
     """Parses and returns the department potion of the coursename: i.e. MATH111 -> MATH"""
@@ -27,4 +42,4 @@ def write_dict_to_file(dataName: str, dataBody: dict, filename: str):
     f.write(dataName + " = " + str(dataBody))
     f.close()
 
-write_dict_to_file("gradeDict", create_grade_dict(), "gradeDict.py")
+write_dict_to_file("gradeDict", create_grade_dict(), "./raw_data/gradeDict.py")

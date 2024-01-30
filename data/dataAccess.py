@@ -1,4 +1,4 @@
-from gradeDict import gradeDict
+from ./raw_data/gradeDict import gradeDict
 
 def get_courses_by_department(departmentName: str) -> dict[dict]:
 	"""Returns all courses in a department."""
