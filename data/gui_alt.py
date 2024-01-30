@@ -10,10 +10,26 @@ window.title('Grade Display')
 window.config(bg='grey')
 
 #------------------------------------------------------------------------------
-# Setting up Styles (...But FAILING...)
-style = Style(window)
-style.configure('TFrame', background='blue')
-style.configure('TLabel', background="green")
+# Setting up Styles
+style = Style()
+ 
+# This will be adding style, and naming that style variable as W.Tbutton (TButton is used for ttk.Button).
+style.configure(
+    'W.TButton',
+    font = ('calibri', 18, 'bold', 'underline'),
+    foreground = 'green')
+
+style.configure(
+    'TLabel',
+    font = ('calibri', 12, 'bold'),
+    foreground = 'black')
+
+style.configure(
+    'TRadiobutton',
+    font = ('calibri', 12),
+    foreground = 'black',
+    background= 'blue')
+
 
 #------------------------------------------------------------------------------
 # Helper Functions
@@ -44,7 +60,7 @@ def instructor_selected(self):
 def course_selected(choice):
     # After course is selected (either through instructor or directly), the user chooses the data
     if choice == "Course":
-         courseFrame.pack_forget()
+         courseFrame.pack_forget() # Remove the Course Selector Frame if comparing all courses
 
     yAxisLabel.pack()
     aButton.pack()
@@ -74,15 +90,16 @@ def generate_graph():
     count = countVar.get()
     print(f'Department: {department}\n Level: {level}\n X-Axis: {xVariable}\n Course: {course}\n Y-Axis: {yVariable}\n Include Only Faculty?: {faculty}\n Include Count?: {count}')
 
-# All Frames are Created Below. They are not added to the Grid until they are needed
+# All Frames are Created Below. They are not packed until they are needed
 #------------------------------------------------------------------------------
 # Department Selection Dropdown Menu Frame
-departmentFrame = Frame(window, style='TFrame')
+departmentFrame = Frame(window)
 departmentVar = StringVar()
 departments = [""] + list(naturalSci.depts_dict.values()) # <--- This should be changed to a more dynamic approach
 departmentLabel = Label(
     departmentFrame,
-    text="Select a Department")
+    text="Select a Department",
+    style='TLabel')
 departmentMenu = OptionMenu(
     departmentFrame,
     departmentVar,
@@ -107,6 +124,7 @@ levelMenu = OptionMenu(
 # X-Axis Selection Frame (Instructors or Courses)
 xAxisFrame = Frame(window)
 xAxisVar = IntVar()
+xAxisVar.set(-1)
 xAxisLabel = Label(
     xAxisFrame,
     text="Compare Instructors or Courses")
@@ -115,6 +133,7 @@ instructorButton = Radiobutton(
     text = "Instructor",
     variable=xAxisVar,
     value=0,
+    style='TRadiobutton',
     command=lambda: instructor_selected("Instructor"))
 courseButton = Radiobutton(
     xAxisFrame,
@@ -141,6 +160,7 @@ courseMenu = OptionMenu(
 # Y-Axis Selection Frame (A's or D's/F's)
 yAxisFrame = Frame(window)
 yAxisVar = IntVar()
+yAxisVar.set(-1)
 yAxisLabel = Label(
     yAxisFrame,
     text="Compare Percentage of A's or D's/F's")
@@ -184,6 +204,7 @@ generateFrame = Frame(window)
 generateButton = Button(
     generateFrame,
     text="Generate Graph",
+    style='W.TButton',
     command=generate_graph)
 
 #------------------------------------------------------------------------------
