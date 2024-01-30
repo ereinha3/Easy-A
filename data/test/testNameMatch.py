@@ -23,6 +23,8 @@ if tests_dir != cur_dir:
 import unittest
 import scrapedNames
 import gradeDataNames
+# FIXME change to data access module once name-matching logic is moved over
+import nameMatch as nameMatch
 
 expand_prints = False
 
@@ -145,6 +147,41 @@ class TestAbnormalNames(unittest.TestCase):
             print(f"scraped wordy names: {wordy_names}")
         else:
             print("No wordy names in scraped sample")
+
+class TestNameMatch(unittest.TestCase):
+    """
+    Test for the efficacy of the functions dedicated to matching names
+    """
+
+    def test_example_match1(self):
+        """
+        Test the full name matching process with an example name from gradedata sample.
+        There is only one logical match in the scraped names sample.
+        """
+        example_name = "Johnson, Eric Allen"
+        # create dict from scraped names sample
+        names_dict = nameMatch.scraped_names_to_dict(scrapedNames.scraped_names_sample)
+        # try to match name
+        candidates = nameMatch.match_last_name(example_name, names_dict)
+        self.assertEqual(["Eric A. Johnson"], candidates)
+        result = nameMatch.match_first_name(example_name, candidates)
+        self.assertEqual(["Eric A. Johnson"], result)
+
+    def test_example_match2(self):
+        """
+        Test the full name matching process with an example name.
+        A contrived scraped names list is given with multiple matching last names.
+        """
+        example_name = "Doe, Jon A."
+        scraped_names = ["Jon A. Doe", "John B. Doe", "John C. Smith"]
+        # create dict from scraped names sample
+        names_dict = nameMatch.scraped_names_to_dict(scraped_names)
+        # try to match name
+        candidates = nameMatch.match_last_name(example_name, names_dict)
+        self.assertEqual(["Jon A. Doe", "John B. Doe"], candidates)
+        result = nameMatch.match_first_name(example_name, candidates)
+        self.assertEqual(["Jon A. Doe"], result)
+
 
 
 
