@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter.ttk import *
 import naturalSci
+from dataAccess import *
 
 
 #------------------------------------------------------------------------------
@@ -10,26 +11,10 @@ window.title('Grade Display')
 window.config(bg='grey')
 
 #------------------------------------------------------------------------------
-# Setting up Styles
-style = Style()
- 
-# This will be adding style, and naming that style variable as W.Tbutton (TButton is used for ttk.Button).
-style.configure(
-    'W.TButton',
-    font = ('calibri', 18, 'bold', 'underline'),
-    foreground = 'green')
-
-style.configure(
-    'TLabel',
-    font = ('calibri', 12, 'bold'),
-    foreground = 'black')
-
-style.configure(
-    'TRadiobutton',
-    font = ('calibri', 12),
-    foreground = 'black',
-    background= 'blue')
-
+# Setting up Styles (...But FAILING...)
+style = Style(window)
+style.configure('TFrame', background='blue')
+style.configure('TLabel', background="green")
 
 #------------------------------------------------------------------------------
 # Helper Functions
@@ -41,6 +26,7 @@ def enter_student_mode():
 def department_selected(self):
     # After a department is selected, the user selects a level
     levelLabel.pack()
+    change_menu(levelMenu["menu"], determine_levels())
     levelMenu.pack()
     levelFrame.pack(fill=BOTH, expand=True)
 
@@ -50,17 +36,49 @@ def level_selected(self):
     instructorButton.pack()
     courseButton.pack()
     xAxisFrame.pack(fill=BOTH, expand=True)
+    
+def get_dept():
+    """
+    Obtain the department selected
+    """
+    return departmentVar.get()
+    
+def determine_levels():
+    '''
+    Use the selected department to find the levels available'''
+    if get_dept():
+        dept_code = get_dept_code_from_name(get_dept())        
+        return ["All"] + get_levels_from_dept_code(dept_code)
 
+    else:
+        return [""]
+    
+def determine_course():
+    if get_dept():
+        dept_code = get_dept_code_from_name(get_dept())        
+        return ["All"] + get_courses_from_dept_code(dept_code)
+    else:
+        return [""]
+    
+def change_menu(menu, queue):
+    menu.delete(0, "end")
+    for ele in queue:
+        menu.add_command(label=ele, 
+                             command=lambda value=ele: levelVar.set(value))
+    
+    
+    
 def instructor_selected(self):
     # After instructor is selected, the user needs to specify which course to compare
     courseLabel.pack()
+    
     courseMenu.pack()
     courseFrame.pack(fill=BOTH, expand=True)
 
 def course_selected(choice):
     # After course is selected (either through instructor or directly), the user chooses the data
     if choice == "Course":
-         courseFrame.pack_forget() # Remove the Course Selector Frame if comparing all courses
+         courseFrame.pack_forget()
 
     yAxisLabel.pack()
     aButton.pack()
@@ -88,18 +106,18 @@ def generate_graph():
     yVariable = yAxisVar.get()
     faculty = facultyVar.get()
     count = countVar.get()
-    print(f'Department: {department}\n Level: {level}\n X-Axis: {xVariable}\n Course: {course}\n Y-Axis: {yVariable}\n Include Only Faculty?: {faculty}\n Include Count?: {count}')
+    print(f'Department: {department}\n Level: {level}\n X-Axis: {xVariable}\n \
+        Course: {course}\n Y-Axis: {yVariable}\n Include Only Faculty?: {faculty}\n Include Count?: {count}')
 
-# All Frames are Created Below. They are not packed until they are needed
+# All Frames are Created Below. They are not added to the Grid until they are needed
 #------------------------------------------------------------------------------
 # Department Selection Dropdown Menu Frame
-departmentFrame = Frame(window)
+departmentFrame = Frame(window, style='TFrame')
 departmentVar = StringVar()
 departments = [""] + list(naturalSci.depts_dict.values()) # <--- This should be changed to a more dynamic approach
 departmentLabel = Label(
     departmentFrame,
-    text="Select a Department",
-    style='TLabel')
+    text="Select a Department")
 departmentMenu = OptionMenu(
     departmentFrame,
     departmentVar,
@@ -110,7 +128,7 @@ departmentMenu = OptionMenu(
 # Course Level Dropdown Menu Frame
 levelFrame = Frame(window)
 levelVar = StringVar()
-levels = ["", "All", "100-Level", "200-Level", "300-Level", "400-Level", "500-Level", "600-Level", "700-Level"] # <--- This should be changed to a more dynamic approach
+levels = determine_levels() # <--- This should be changed to a more dynamic approach
 levelLabel = Label(
     levelFrame,
     text="Select a Level")
@@ -124,7 +142,6 @@ levelMenu = OptionMenu(
 # X-Axis Selection Frame (Instructors or Courses)
 xAxisFrame = Frame(window)
 xAxisVar = IntVar()
-xAxisVar.set(-1)
 xAxisLabel = Label(
     xAxisFrame,
     text="Compare Instructors or Courses")
@@ -133,7 +150,6 @@ instructorButton = Radiobutton(
     text = "Instructor",
     variable=xAxisVar,
     value=0,
-    style='TRadiobutton',
     command=lambda: instructor_selected("Instructor"))
 courseButton = Radiobutton(
     xAxisFrame,
@@ -160,7 +176,6 @@ courseMenu = OptionMenu(
 # Y-Axis Selection Frame (A's or D's/F's)
 yAxisFrame = Frame(window)
 yAxisVar = IntVar()
-yAxisVar.set(-1)
 yAxisLabel = Label(
     yAxisFrame,
     text="Compare Percentage of A's or D's/F's")
@@ -204,7 +219,6 @@ generateFrame = Frame(window)
 generateButton = Button(
     generateFrame,
     text="Generate Graph",
-    style='W.TButton',
     command=generate_graph)
 
 #------------------------------------------------------------------------------
