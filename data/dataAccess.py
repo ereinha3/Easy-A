@@ -83,11 +83,11 @@ def query_graphing_data(department: str, level: int = -1, groupKey: str = "instr
 	courses = get_courses_by_department(department)
 
 	#if level is negative then no filtering is done, just keep all courses in the department
-	if (level < 0):
+	if not level or type(level) != int or level < 0:
 		pass
 
 	#get all courses in the given level
-	elif (level % 100 == 0):
+	elif level % 100 == 0:
 		courses = filter_courses_by_level(courses, level)
 
 	#get only the specified course
