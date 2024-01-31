@@ -1,3 +1,4 @@
+# Changed so the verbose name is the key, the code is the value
 depts_dict = {
     "Computer and Information Science":"CIS",
     "Biology":"BI",
