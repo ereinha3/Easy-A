@@ -1,13 +1,12 @@
 depts_dict = {
-    "CIS":"Computer and Information Science",
-    "BI": "Biology",
-    "CH": "Chemistry and Biochemistry",
-    "": "General Science",
-    "HPHY": "Human Physiology",
-    "MATH": "Mathematics",
-    "NEUR": "Neuroscience",
-    "PHYS": "Physics",
-    "PSY": "Psychology",
-    "GEOG": "Geography",
-    "ERTH": "Geological Sciences"
+    "Computer and Information Science":"CIS",
+    "Biology":"BI",
+    "Chemistry and Biochemistry":"CH",
+    "Human Physiology":"HPHY",
+    "Mathematics":"MATH",
+    "Neuroscience":"NEUR",
+    "Physics":"PHYS",
+    "Psychology": "PSY",
+    "Geography":"GEOG",
+    "Geological Sciences":"ERTH"
 }
