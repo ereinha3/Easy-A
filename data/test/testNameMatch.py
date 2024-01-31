@@ -153,7 +153,7 @@ class TestNameMatch(unittest.TestCase):
     Test for the efficacy of the functions dedicated to matching names
     """
 
-    def test_example_match1(self):
+    def test_match_simple(self):
         """
         Test the full name matching process with an example name from gradedata sample.
         There is only one logical match in the scraped names sample.
@@ -162,28 +162,61 @@ class TestNameMatch(unittest.TestCase):
         # create dict from scraped names sample
         names_dict = nameMatch.scraped_names_to_dict(scrapedNames.scraped_names_sample)
         # try to match name
-        candidates = nameMatch.match_last_name(example_name, names_dict)
-        self.assertEqual(["Eric A. Johnson"], candidates)
-        result = nameMatch.match_first_name(example_name, candidates)
+        result = nameMatch.match_name(example_name, names_dict)
         self.assertEqual(["Eric A. Johnson"], result)
 
-    def test_example_match2(self):
+
+    def test_match_similar_names(self):
         """
         Test the full name matching process with an example name.
         A contrived scraped names list is given with multiple matching last names.
         """
         example_name = "Doe, Jon A."
+        # create dict from this list of contrived names
         scraped_names = ["Jon A. Doe", "John B. Doe", "John C. Smith"]
-        # create dict from scraped names sample
         names_dict = nameMatch.scraped_names_to_dict(scraped_names)
         # try to match name
-        candidates = nameMatch.match_last_name(example_name, names_dict)
-        self.assertEqual(["Jon A. Doe", "John B. Doe"], candidates)
-        result = nameMatch.match_first_name(example_name, candidates)
+        result = nameMatch.match_name(example_name, names_dict)
         self.assertEqual(["Jon A. Doe"], result)
 
+    def test_match_wordy_last_name(self):
+        """
+        Test the full name matching process with an example name.
+        The example name has 3 last names.
+        """
+        example_name = "Chioma Tufayl Regin, Jocelyn Rigantona"
+        # create dict from this list of contrived names
+        scraped_names = ["Jocelyn Rigantona China Tufayl Regin",
+                         "Jocelyn Rigantona Chioma Tulip Regin",
+                         "Jocelyn Rigantona Chioma Tufayl Regent",
+                         "Jocelyn Rigantona Chioma Tufayl Regin"]
+        names_dict = nameMatch.scraped_names_to_dict(scraped_names)
+        # try to match name
+        result = nameMatch.match_name(example_name, names_dict)
+        self.assertEqual(["Jocelyn Rigantona Chioma Tufayl Regin"], result)
 
-
+    def test_match_wordy_given_name(self):
+        """
+        Test the full name matchcing process with an exmaple name.
+        The example name has 3 given names, including one initial.
+        The example scraped names will sometimes use initials or extra given names.
+        """
+        example_name = "Sargon, Jeanne Ita A. Kenina"
+        # creat a dict from this list of contrived names
+        scraped_names = ["Jeanne Ita Anatu Kenina Sargon",
+                         "J. Ita Anatu Kenina Sargon", # first initial
+                         "Jeanne Ita Anatu Kenina Neva Sargon", # extra given name
+                         "Jeanne Ita Antas K. Sargon", # middle initial
+                         "Joanna Ita Anatu Kenina Sargon", # wrong
+                         "Jeanne Ita Anatu Keller Sargon"] # wrong
+        names_dict = nameMatch.scraped_names_to_dict(scraped_names)
+        # try to match name
+        result = nameMatch.match_name(example_name, names_dict)
+        expected = ["Jeanne Ita Anatu Kenina Sargon",
+                    "J. Ita Anatu Kenina Sargon",
+                    "Jeanne Ita Anatu Kenina Neva Sargon",
+                    "Jeanne Ita Antas K. Sargon"]
+        self.assertEqual(expected, result)
 
 
 if __name__ == "__main__":
