@@ -11,6 +11,12 @@ def filter_courses_by_level(courses: dict[dict], level: int) -> dict[dict]:
 def get_course_numbers_by_department(departmentName: str) -> list[int]:
     return [ courseNumber for courseNumber in gradeDict[departmentName].keys() ]
 
+def get_course_levels_by_department(departmentName: str) -> list[int]:
+    levels = set()
+    for courseNumber in gradeDict[departmentName].keys():
+        levels.add(courseNumber // 100 * 100)
+    return list(levels)
+
 def get_course_numbers_by_department_level(departmentName: str, level: int) -> list[int]:
     return [ courseNumber for courseNumber in gradeDict[departmentName].keys() if courseNumber // 100 == level // 100 ]
 
