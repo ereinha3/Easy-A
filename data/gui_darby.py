@@ -173,7 +173,7 @@ def grades_selected() -> None:
     generateButton.pack()
     generateFrame.pack(fill=BOTH, expand=True)
 
-def change_menu(menuWidget: OptionMenu, variable: StringVar, newMenu: list):
+def change_menu(menuWidget: OptionMenu, variable: StringVar, newMenu: list) -> None:
     """Replaces the menu options for an OptionMenu with the values in a list.
     
     Args:
@@ -205,7 +205,7 @@ def get_courses() -> list:
     """
     return data.get_course_numbers_by_department_level(naturalSci.depts_dict[departmentVar.get()], int(levelVar.get()))
 
-def generate_graph():
+def generate_graph() -> None:
     department = departmentVar.get()
     xVariable = xAxisVar.get()
     level = levelVar.get()
