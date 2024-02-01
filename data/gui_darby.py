@@ -11,10 +11,9 @@ window.title('Grade Display')
 window.config(bg='grey')
 
 #------------------------------------------------------------------------------
-# Setting up Styles
+# Styles
 style = Style()
  
-# This will be adding style, and naming that style variable as W.Tbutton (TButton is used for ttk.Button).
 style.configure(
     'W.TButton',
     font = ('calibri', 18, 'bold', 'underline'),
@@ -33,82 +32,121 @@ style.configure(
 
 
 #------------------------------------------------------------------------------
-# Helper Functions
+# Functions
 def enter_student_mode():
+    # Add Department Menu Frame
     departmentLabel.pack()
     departmentMenu.pack()
     departmentFrame.pack(fill=BOTH, expand=True)
 
 def department_selected(self):
-    # After a department is selected, the user selects a level
-    get_levels()
-    levelLabel.pack()
-    levelMenu.pack()
-    levelFrame.pack(fill=BOTH, expand=True)
+    # Remove all frames below compare option (x-axis) frame
+    levelFrame.pack_forget()
+    courseFrame.pack_forget()
+    yAxisFrame.pack_forget()
+    optionsFrame.pack_forget()
+    generateFrame.pack_forget()
 
-    # User also selects whther to compare Instructors or Courses
+    # Add Comparison Option Frame
     xAxisLabel.pack()
     instructorButton.pack()
     courseButton.pack()
+    xAxisVar.set(-1)
     xAxisFrame.pack(fill=BOTH, expand=True)
 
-# def level_selected(self):
-#     # After a level is selected, the user chooses between comparing instructors or courses
-#     xAxisLabel.pack()
-#     instructorButton.pack()
-#     courseButton.pack()
-#     xAxisFrame.pack(fill=BOTH, expand=True)
+def compare_option_selected(choice: str):
+    # Clear all frames below the levels selection frame
+    courseFrame.pack_forget()
+    yAxisFrame.pack_forget()
+    optionsFrame.pack_forget()
+    generateFrame.pack_forget()
 
-def instructor_selected(self):
-    # After instructor is selected, the user needs to specify which course to compare
-    get_courses()
+    levels = []
+    if choice == "instructors":
+        levels.append("All")
+
+    levels += get_levels()
+    change_menu(levelMenu, levels, levelVar)
+    levelVar.set("")
+
+    # Add Level Menu Frame
+    levelLabel.pack()
+    levelMenu.pack()
+    levelFrame.pack(fill=BOTH, expand=True)    
+
+def level_selected(a, b, c):
+    # Trace Function for levelVar
+    if levelVar.get() == "":
+        print("Level Not Selected Yet")
+        return
+    
+    # Clear all frames below the level frame
+    yAxisFrame.pack_forget()
+    optionsFrame.pack_forget()
+    generateFrame.pack_forget()
+    
+    if xAxisVar.get() == 1: # Level Selected via Courses
+        print("Level Selected via Courses")
+        course_selected()
+        return
+    
+    if levelVar.get() == "All":
+        print("All levels selected. Skipping Course Selection")
+        course_selected()
+        return
+    
+    print("Level Selected")
+    courses = ["All"] + get_courses()
+    change_menu(courseMenu, courses, courseVar)
+    courseVar.set("")
+
+    # Add Course Menu Frame
     courseLabel.pack()
     courseMenu.pack()
     courseFrame.pack(fill=BOTH, expand=True)
 
-def course_selected(choice):
-    # After course is selected (either through instructor or directly), the user chooses the data
-    if choice == "Course":
-         courseFrame.pack_forget() # Remove the Course Selector Frame if comparing all courses
-
+def course_selected(a=None, b=None, c=None):
+    # Trace Function for courseVar
+    if courseVar.get() == "" and levelVar.get() != "All" and xAxisVar.get() == 0:
+        print("Course Not Selected Yet")
+        return
+    
+    # Add Grade Data Frame (A's or D/F's)
     yAxisLabel.pack()
     aButton.pack()
     dfButton.pack()
+    yAxisVar.set(-1)
     yAxisFrame.pack(fill=BOTH, expand=True)
 
 def grades_selected():
-    # Once Y-Axis has been selected, add Faculty/Count checkboxes to the window
+    # Add Options Frame
     optionsLabel.pack()
     facultyCheckbox.pack()
+    facultyVar.set(-1)
     countCheckbox.pack()
+    countVar.set(-1)
     optionsFrame.pack(fill=BOTH, expand=True)
 
-    # Also include Generate button since all required variables have been assigned
+    # Add Generate Button Frame
     generateButton.pack()
     generateFrame.pack(fill=BOTH, expand=True)
 
-def get_levels():
-    dept = departmentVar.get()
-    menu = levelMenu["menu"]
+def change_menu(menuWidget: OptionMenu, newMenu: list, variable):
+    menu = menuWidget["menu"]
+    menu.delete(0, "end")
+    for item in newMenu:
+        menu.add_command(label=item, command= lambda value=item: variable.set(value))
 
-    new_menu = ["All"] + data.get_course_levels_by_department(naturalSci.depts_dict[dept])
+def get_levels() -> list:
+    department = departmentVar.get()
+    levels = data.get_course_levels_by_department(naturalSci.depts_dict[department])
+    return levels
 
-    for item in new_menu:
-        menu.add_command(label=item, command= lambda value=item: levelVar.set(value))
-
-    levelVar.set("All")
-
-def get_courses():
+def get_courses() -> list:
     dept = departmentVar.get()
     lvl = levelVar.get()
-    menu = courseMenu("menu")
-
-    new_menu = ["All"] + data.get_course_numbers_by_department_level(naturalSci.depts_dict[dept], lvl)
-
-    for item in new_menu:
-        menu.add_command(label=item, command= lambda value=item: levelVar.set(value))
-
-    levelVar.set("All")
+    courses = data.get_course_numbers_by_department_level(naturalSci.depts_dict[dept], int(lvl))
+    return courses
 
 def generate_graph():
     print("Gathering Data...This is what we need to graph:")
@@ -123,8 +161,7 @@ def generate_graph():
 
 # All Frames are Created Below. They are not packed until they are needed
 #------------------------------------------------------------------------------
-# Department Selection and Level Dropdown Menu Frame
-# These are combined to make it easier to dynamically populate the levels menu
+# Department Selection Dropdown Menu Frame
 departmentFrame = Frame(window)
 departmentVar = StringVar()
 departments = [""] + list(naturalSci.depts_dict.keys())
@@ -138,18 +175,6 @@ departmentMenu = OptionMenu(
     *departments,
     command=department_selected)
 
-levelFrame = Frame(window)
-levelVar = StringVar()
-levels = []
-levelLabel = Label(
-    levelFrame,
-    text="Select a Level")
-levelMenu = OptionMenu(
-    levelFrame,
-    levelVar, 
-    *levels)#,
-    #command=level_selected)
-
 #------------------------------------------------------------------------------
 # X-Axis Selection Frame (Instructors or Courses)
 xAxisFrame = Frame(window)
@@ -160,22 +185,39 @@ xAxisLabel = Label(
     text="Compare Instructors or Courses")
 instructorButton = Radiobutton(
     xAxisFrame,
-    text = "Instructor",
+    text = "Instructors",
     variable=xAxisVar,
     value=0,
     style='TRadiobutton',
-    command=lambda: instructor_selected("Instructor"))
+    command=lambda: compare_option_selected("instructors"))
 courseButton = Radiobutton(
     xAxisFrame,
-    text = "Course",
+    text = "Courses",
     variable=xAxisVar,
     value=1,
-    command= lambda: course_selected("Course"))
+    command= lambda: compare_option_selected("courses"))
+
+
+#------------------------------------------------------------------------------
+# Level Selection Dropdown Menu Frame
+levelFrame = Frame(window)
+levelVar = StringVar()
+levelVar.trace_add("write", level_selected)
+levels = []
+levelLabel = Label(
+    levelFrame,
+    text="Select a Level")
+levelMenu = OptionMenu(
+    levelFrame,
+    levelVar, 
+    *levels,
+    command=level_selected)
 
 #------------------------------------------------------------------------------
 # Course Selection Frame
-courseFrame = Frame(xAxisFrame)
+courseFrame = Frame(window)
 courseVar = StringVar()
+courseVar.trace_add("write", course_selected)
 courses = []
 courseLabel = Label(
     courseFrame,
@@ -217,7 +259,7 @@ optionsLabel = Label(
     text="Options")
 facultyCheckbox = Checkbutton(
     optionsFrame,
-    text="Only Include Regular Faculty",
+    text="Include Only Regular Faculty",
     variable=facultyVar,
     onvalue=1,
     offvalue=0)
