@@ -176,7 +176,7 @@ departmentMenu = OptionMenu(
     command=department_selected)
 
 #------------------------------------------------------------------------------
-# X-Axis Selection Frame (Instructors or Courses)
+# Comparison Option (X-Axis) Selection Frame (Instructors or Courses)
 xAxisFrame = Frame(window)
 xAxisVar = IntVar()
 xAxisVar.set(-1)
@@ -229,13 +229,13 @@ courseMenu = OptionMenu(
     command=course_selected)
 
 #------------------------------------------------------------------------------
-# Y-Axis Selection Frame (A's or D's/F's)
+# Y-Axis Selection Frame (A's or D/F's)
 yAxisFrame = Frame(window)
 yAxisVar = IntVar()
 yAxisVar.set(-1)
 yAxisLabel = Label(
     yAxisFrame,
-    text="Compare Percentage of A's or D's/F's")
+    text="Compare Percentage of A's or D/F's")
 aButton = Radiobutton(
     yAxisFrame,
     text="A's",
@@ -244,7 +244,7 @@ aButton = Radiobutton(
     command=grades_selected)
 dfButton = Radiobutton(
     yAxisFrame,
-    text="D's/F's",
+    text="D/F's",
     variable=yAxisVar,
     value=1,
     command=grades_selected)
