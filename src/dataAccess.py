@@ -9,18 +9,22 @@ def filter_courses_by_level(courses: dict[dict], level: int) -> dict[dict]:
 	return { key: value for key, value in courses.items() if key // 100 == level // 100 }
 
 def get_course_numbers_by_department(departmentName: str) -> list[int]:
+    """Returns a list of all course numbers (i.e. 111, 112, 221...) that exist within a department."""
     return [ courseNumber for courseNumber in gradeDict[departmentName].keys() ]
 
 def get_course_levels_by_department(departmentName: str) -> list[int]:
+    """Returns a list of all course levels (i.e. 100, 200, 300...) that exist within a department."""
     levels = set()
     for courseNumber in gradeDict[departmentName].keys():
         levels.add(courseNumber // 100 * 100)
     return list(levels)
 
 def get_course_numbers_by_department_level(departmentName: str, level: int) -> list[int]:
+    """Returns a list of all course numbers that exist with a department, filtered by a specific level."""
     return [ courseNumber for courseNumber in gradeDict[departmentName].keys() if courseNumber // 100 == level // 100 ]
 
 def get_department_names() -> list[str]:
+    """Return the code names for all departments."""
     return [ name for name in gradeDict.keys() ]
 
 def filter_by_faculty_only(crns: set[int]):
@@ -41,8 +45,8 @@ def accum(currentDict: dict[str, int], newDict: dict[str, int]) -> dict[str, int
 			currentDict[key] += newDict[key]
 	return currentDict
 
-def group_by(groupKey: str, courses: dict[dict]):
-	""""""
+def group_by(groupKey: str, courses: dict[dict]) -> dict[dict]:
+	"""Returns a dictionary of course grade information, grouped by any valid key within the courses dict."""
 	groupByData = {}
 	for number, instances in courses.items():
 		for courseInstance in instances:
@@ -60,11 +64,11 @@ def agg_data(groupByData):
 		groupByData[key].update({key: value / courseCount for key, value in groupByData[key].items() if "prec" in key})
 	return groupByData
 
-def query_graphing_data(department: str, level: int = -1, groupKey: str = "instructor", filterFaculty: bool = False):
+def query_graphing_data(department: str, level: int = -1, groupKey: str = "instructor", filterFaculty: bool = False) -> dict[dict]:
 	"""
 	Return a dictionary of the following format:
 	'groupName': {
-		'course_count':  int(total number of courses in the group) 
+	'course_count':  int(total number of courses in the group) 
 		'aprec':		 mean(aprec aggregated by groupKey)
 		'bprec':		 mean(bprec aggregated by groupKey)
 		'cprec':		 mean(cprec aggregated by groupKey)
@@ -82,7 +86,7 @@ def query_graphing_data(department: str, level: int = -1, groupKey: str = "instr
 	"""
 	courses = get_courses_by_department(department)
 
-	#if level is negative then no filtering is done, just keep all courses in the department
+	#if level does not exist, is not an int or is negative then no filtering is done, just keep all courses in the department
 	if not level or type(level) != int or level < 0:
 		pass
 
