@@ -1,3 +1,11 @@
+"""Graphical User Interface for CS422, Group 7, Project 1 - EasyA (or JustPass)
+
+Originally created by Darby Wright (daw) on 1/18
+
+
+
+"""
+
 from tkinter import *
 from tkinter.ttk import *
 import dataAccess as data
@@ -27,8 +35,12 @@ style.configure(
 style.configure(
     'TRadiobutton',
     font = ('calibri', 12),
-    foreground = 'black',
-    background= 'blue')
+    foreground = 'black')
+
+style.configure(
+    'TMenubutton',
+    font = ('calibri', 12),
+    foreground = 'black')
 
 #------------------------------------------------------------------------------
 # Functions
@@ -38,6 +50,8 @@ def enter_student_mode() -> None:
     Returns:
         None
     """
+    # print(departmentMenu["menu"].keys())
+    departmentMenu["menu"].configure(font = ('calibri', 12))
     # Add Department Menu Frame
     departmentLabel.pack()
     departmentMenu.pack()
@@ -89,6 +103,8 @@ def compare_option_selected(choice: str) -> None:
     change_menu(levelMenu, levelVar, levels)
     levelVar.set("")
 
+    # print(levelMenu["menu"].keys())
+    levelMenu["menu"].configure(font = ('calibri', 12))
     # Add Level Menu Frame
     levelLabel.pack()
     levelMenu.pack()
@@ -126,6 +142,8 @@ def level_selected(a: str=None, b: str=None, c: str=None) -> None:
     change_menu(courseMenu, courseVar, courses)
     courseVar.set("")
 
+    # print(courseMenu["menu"].keys())
+    courseMenu["menu"].configure(font = ('calibri', 12))
     # Add Course Menu Frame
     courseLabel.pack()
     courseMenu.pack()
@@ -156,8 +174,9 @@ def course_selected(a: str=None, b: str=None, c: str=None) -> None:
     yAxisLabel.pack()
     aButton.pack()
     dfButton.pack()
-    yAxisVar.set(-1)
+    yAxisVar.set(0)
     yAxisFrame.pack(fill=BOTH, expand=True)
+    grades_selected()
 
 def grades_selected() -> None:
     """Called every time the user selects or changes the grade option."""
@@ -177,13 +196,14 @@ def change_menu(menuWidget: OptionMenu, variable: StringVar, newMenu: list) -> N
     """Replaces the menu options for an OptionMenu with the values in a list.
     
     Args:
-        menuWidget (ttk.OptionMenu): the OptionMenu objectn whose menu you'd like to replace
+        menuWidget (ttk.OptionMenu): the OptionMenu object whose menu you'd like to replace
         variable (ttk.StringVar): the StringVar objects that stores the menu selection
         newMenu (list): the list of items youd like to replace the current menu options
 
     Returns:
         None
     """
+    # This technique for changing option menus dynamic comes from Stack Overflow
     menu = menuWidget["menu"]
     menu.delete(0, "end")
     for item in newMenu:
@@ -229,6 +249,7 @@ departmentMenu = OptionMenu(
     departmentFrame,
     departmentVar,
     *departments,
+    style='TMenubutton',
     command=department_selected)
 
 #------------------------------------------------------------------------------
@@ -287,7 +308,7 @@ courseMenu = OptionMenu(
 # Y-Axis Selection Frame (A's or D/F's)
 yAxisFrame = Frame(window)
 yAxisVar = IntVar()
-yAxisVar.set(-1)
+yAxisVar.set(0)
 yAxisLabel = Label(
     yAxisFrame,
     text="Compare Percentage of A's or D/F's")
