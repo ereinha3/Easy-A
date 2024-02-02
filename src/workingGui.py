@@ -42,9 +42,9 @@ style.configure(
     foreground = 'black')
 
 #------------------------------------------------------------------------------
-# Functions
+# Command Functions
 def enter_student_mode() -> None:
-    """Bootstraps the Program. Begins asking the user for graphing parameters.
+    """Begins asking the user for graphing parameters.
     
     Returns:
         None
@@ -174,10 +174,23 @@ def grades_selected() -> None:
     # Add Generate Button Frame
     generateFrame.pack(fill=BOTH, expand=True)
 
+def generate_graph_selected() -> None:
+    generateFrame.pack_forget()
+    parameterContainerFrame.pack_forget()
+    clearGraphsFrame.pack(fill='both', expand=True, side="bottom")
+
+    if graph1Frame.winfo_ismapped():
+        generate_graph_frame(graph2Frame)
+        graph2Frame.pack(fill='both', expand=True, side="right")
+    else:
+        generate_graph_frame(graph1Frame)
+        graph1Frame.pack(fill='both', expand=True, side="left")
+        graphContainerFrame.pack(fill=BOTH, expand=True, side="right")
+
 def clear_graph_selected() -> None:
     # Add the generate and compare graphs buttons back to their frames when the graphs are cleared
     generateButton.pack()
-    compareButton.pack()
+    compareGraphsButton.pack()
 
     # Remove All Frames Other Than Department Menu Frame
     graph1Frame.pack_forget()
@@ -190,11 +203,26 @@ def clear_graph_selected() -> None:
     yAxisFrame.pack_forget()
     optionsFrame.pack_forget()
     generateFrame.pack_forget()
-    clearFrame.pack_forget()
+    clearGraphsFrame.pack_forget()
 
     departmentVar.set("")
     enter_student_mode()
 
+def compare_graphs_selected() -> None:
+    compareGraphsButton.pack_forget()
+
+    xAxisFrame.pack_forget()
+    levelFrame.pack_forget()
+    courseFrame.pack_forget()
+    yAxisFrame.pack_forget()
+    optionsFrame.pack_forget()
+    generateFrame.pack_forget()
+
+    departmentVar.set("")
+    enter_student_mode()
+
+#------------------------------------------------------------------------------
+# Helper Functions
 def change_menu(menuWidget: OptionMenu, variable: StringVar, newMenu: list) -> None:
     """Replaces the menu options for an OptionMenu with the values in a list.
     
@@ -232,33 +260,7 @@ def clear_frame(frame: Frame) -> None:
    for widgets in frame.winfo_children():
       widgets.destroy()
 
-def generate_graph() -> None:
-    generateFrame.pack_forget()
-    parameterContainerFrame.pack_forget()
-    clearFrame.pack(fill='both', expand=True, side="bottom")
-
-    if graph1Frame.winfo_ismapped():
-        graph_current_data(graph2Frame)
-        graph2Frame.pack(fill='both', expand=True, side="right")
-    else:
-        graph_current_data(graph1Frame)
-        graph1Frame.pack(fill='both', expand=True, side="left")
-        graphContainerFrame.pack(fill=BOTH, expand=True, side="right")
-
-def generate_compare_graph():
-    compareButton.pack_forget()
-
-    xAxisFrame.pack_forget()
-    levelFrame.pack_forget()
-    courseFrame.pack_forget()
-    yAxisFrame.pack_forget()
-    optionsFrame.pack_forget()
-    generateFrame.pack_forget()
-
-    departmentVar.set("")
-    enter_student_mode()
-
-def graph_current_data(graphFrame: Frame) -> None:
+def generate_graph_frame(graphFrame: Frame) -> None:
     department = naturalSci.depts_dict[departmentVar.get()]
     xVariable = xAxisVar.get()
     if xVariable == 0:
@@ -299,7 +301,6 @@ def graph_current_data(graphFrame: Frame) -> None:
 # Container Frames
 parameterContainerFrame = Frame(window)
 graphContainerFrame = Frame(window)
-buttonContainerFrame = Frame(window)
 
 #------------------------------------------------------------------------------
 # Graph Frames
@@ -444,27 +445,27 @@ generateButton = Button(
     generateFrame,
     text="Generate Graph",
     style='W.TButton',
-    command=generate_graph)
+    command=generate_graph_selected)
 
 generateButton.pack()
 
 #------------------------------------------------------------------------------
 # Clear Graph Button Frame
-clearFrame = Frame(window)
-clearButton = Button(
-    clearFrame,
+clearGraphsFrame = Frame(window)
+clearGraphsButton = Button(
+    clearGraphsFrame,
     text="Clear Graph(s)",
     style='W.TButton',
     command=clear_graph_selected)
 
-compareButton = Button(
-    clearFrame,
+compareGraphsButton = Button(
+    clearGraphsFrame,
     text="Generate Additional Graph",
     style='W.TButton',
-    command=generate_compare_graph)
+    command=compare_graphs_selected)
 
-clearButton.pack()
-compareButton.pack()
+clearGraphsButton.pack()
+compareGraphsButton.pack()
 
 #------------------------------------------------------------------------------
 
