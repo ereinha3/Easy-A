@@ -1,4 +1,5 @@
 from data.gradeDict import gradeDict
+from nameMatch import match_name
 
 def get_courses_by_department(departmentName: str) -> dict[dict]:
 	"""Returns all courses in a department."""
@@ -27,7 +28,8 @@ def get_department_names() -> list[str]:
     """Return the code names for all departments."""
     return [ name for name in gradeDict.keys() ]
 
-def filter_by_faculty_only(crns: set[int]):
+def filter_by_faculty_only(courses: dict[dict]) -> dict[dict]:
+    match_name()
 	"""Not yet implemented"""
 	return False
 

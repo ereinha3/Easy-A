@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 import requests
 import re
 import time
-from naturalSci import depts_dict
+from data.naturalSci import depts_dict
 
 # constants
 NATURAL_SCI_FILEPATH = "naturalSci.txt"
@@ -94,6 +94,10 @@ def main() -> None:
     # (temporary) print all names
     print(names_list)
     print(f"Found a total of {len(names_list)} names")
+
+    f = open("./data/faculty_names.py", "w")
+    f.write("faculty_names = " + str(set(names_list)))
+    f.close()
 
 if __name__ == "__main__":
     main()
