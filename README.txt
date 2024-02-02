@@ -6,6 +6,33 @@ Darby Wright
 Ethan Reinhart
 Morgan Jones
 
+#Python installation
+If Python is already locally installed, continue to the next command. Otherwise navigate to the following website:
+	https://www.python.org/downloads/
+
+#Requirements verfication
+Use of the python interpreter is essential to running this program. Run the following line of code to ensure Python is successfully installed.
+	python --version
+
+This program has been tested on Python versions 3.9 and above. If your python version is older than this, please visit the following website:
+	https://www.python.org/downloads/	
+
+Run the following line of code to ensure the package installer for Python (pip) is successfully installed.
+	pip -V
+
+#Installation of required modules
+The Tkinter module creates the functionality of the UI in this program. Run the following command to install Tkinter.
+	pip install tk
+
+The matplotlib module is also necessary. Run the following command to ensure proper download.
+	pip install matplotlib
+
+The BeautifulSoup module allows the program to scrape the web for faculty names. This module can be installed with the following command.
+	pip install beautifulsoup4
+
+The requests module is also required. Please run the following command.
+	pip install requests
+
 #Running the software:
 The data files necessary for running the software have been preopulated. To instantialize the interface type the following command:
 
