@@ -10,17 +10,16 @@ from bs4 import BeautifulSoup
 import requests
 import re
 import time
-from naturalSci import depts_dict
+from data.naturalSci import depts_dict
 
 # constants
-NATURAL_SCI_FILEPATH = "naturalSci.txt"
 CATALOG_URL = "https://web.archive.org/web/20140901091007/http://catalog.uoregon.edu/arts_sciences/"
 URL_DOMAIN_PREFIX = "https://web.archive.org"
 FACULTY_MATCH_TEXT = re.compile(".*Faculty.*")
 INTERNET_REQUEST_DELAY = 2
 
 
-def get_dept_url_list(catalog_url: str, dept_names_filepath: str) -> list[str]:
+def get_dept_url_list(catalog_url: str) -> list[str]:
     """
     Given the URL for the Catalog from the UO College of Arts and Sciences
     And the path to a file containing the names of desired departments,
@@ -30,9 +29,7 @@ def get_dept_url_list(catalog_url: str, dept_names_filepath: str) -> list[str]:
     page = requests.get(CATALOG_URL)
     soup = BeautifulSoup(page.content, "html.parser")
 
-    # get names of natural sciences
-    #target_depts_list = open(dept_names_filepath, "r").readlines()
-    #target_depts_list = [item.strip() for item in target_depts_list]
+    # get target departments (natural sciences
     target_depts_list = depts_dict.keys()
 
     # list of department pages
@@ -81,7 +78,7 @@ def main() -> None:
     # get department URLs
     print("Getting department URLs...")
     page = requests.get(CATALOG_URL)
-    dept_url_list = get_dept_url_list(CATALOG_URL, NATURAL_SCI_FILEPATH)
+    dept_url_list = get_dept_url_list(CATALOG_URL)
 
     # find the professors from each department page
     print("Collecting faculty names from each department page...")
