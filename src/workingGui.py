@@ -2,8 +2,6 @@
 
 Originally created by Darby Wright (daw) on 1/18
 
-
-
 """
 from tkinter import *
 from tkinter.ttk import *
@@ -50,11 +48,19 @@ def enter_student_mode() -> None:
     Returns:
         None
     """
+    # Forget All Frames Below Department Menu Frame
+    xAxisFrame.pack_forget()
+    levelFrame.pack_forget()
+    courseFrame.pack_forget()
+    yAxisFrame.pack_forget()
+    optionsFrame.pack_forget()
+    generateFrame.pack_forget()
+    graph1Frame.pack_forget()
+    clearFrame.pack_forget()
+
     # print(departmentMenu["menu"].keys())
     departmentMenu["menu"].configure(font = ('calibri', 12))
     # Add Department Menu Frame
-    departmentLabel.pack()
-    departmentMenu.pack()
     departmentFrame.pack(fill=BOTH, expand=True)
 
 def department_selected(self: str) -> None:
@@ -73,10 +79,7 @@ def department_selected(self: str) -> None:
     optionsFrame.pack_forget()
     generateFrame.pack_forget()
 
-    # Add Comparison Option Frame
-    xAxisLabel.pack()
-    instructorButton.pack()
-    courseButton.pack()
+    # Add Comparison Option (X-Axis) Frame
     xAxisVar.set(-1) # Set or reset default value to nothing
     xAxisFrame.pack(fill=BOTH, expand=True)
 
@@ -106,8 +109,6 @@ def compare_option_selected(choice: str) -> None:
     # print(levelMenu["menu"].keys())
     levelMenu["menu"].configure(font = ('calibri', 12))
     # Add Level Menu Frame
-    levelLabel.pack()
-    levelMenu.pack()
     levelFrame.pack(fill=BOTH, expand=True)    
 
 def level_selected(a: str=None, b: str=None, c: str=None) -> None:
@@ -142,11 +143,8 @@ def level_selected(a: str=None, b: str=None, c: str=None) -> None:
     change_menu(courseMenu, courseVar, courses)
     courseVar.set("")
 
-    # print(courseMenu["menu"].keys())
     courseMenu["menu"].configure(font = ('calibri', 12))
     # Add Course Menu Frame
-    courseLabel.pack()
-    courseMenu.pack()
     courseFrame.pack(fill=BOTH, expand=True)
 
 def course_selected(a: str=None, b: str=None, c: str=None) -> None:
@@ -171,9 +169,6 @@ def course_selected(a: str=None, b: str=None, c: str=None) -> None:
     generateFrame.pack_forget()
     
     # Add Grade access Frame (A's or D/F's)
-    yAxisLabel.pack()
-    aButton.pack()
-    dfButton.pack()
     yAxisVar.set(0)
     yAxisFrame.pack(fill=BOTH, expand=True)
     grades_selected()
@@ -181,15 +176,11 @@ def course_selected(a: str=None, b: str=None, c: str=None) -> None:
 def grades_selected() -> None:
     """Called every time the user selects or changes the grade option."""
     # Add Options Frame
-    optionsLabel.pack()
-    facultyCheckbox.pack()
     facultyVar.set(0)
-    countCheckbox.pack()
     countVar.set(0)
     optionsFrame.pack(fill=BOTH, expand=True)
 
     # Add Generate Button Frame
-    generateButton.pack()
     generateFrame.pack(fill=BOTH, expand=True)
 
 def change_menu(menuWidget: OptionMenu, variable: StringVar, newMenu: list) -> None:
@@ -226,8 +217,13 @@ def get_courses() -> list:
     return access.get_course_numbers_by_department_level(naturalSci.depts_dict[departmentVar.get()], int(levelVar.get()))
 
 def generate_graph() -> None:
-    department = departmentVar.get()
+
+    department = naturalSci.depts_dict[departmentVar.get()]
     xVariable = xAxisVar.get()
+    if xVariable == 0:
+        xVariable = "instructor_name"
+    else:
+        xVariable = "course_name"
 
     level = levelVar.get()
     if level == "All":
@@ -247,8 +243,13 @@ def generate_graph() -> None:
     count = countVar.get()
     print(f'\nDepartment: {department}\n X-Axis: {xVariable}\n Level: {level}\n Course: {course}\n Y-Axis: {yVariable}\n Include Only Faculty?: {faculty}\n Include Count?: {count}')
 
-    graphing.graph_in_frame(graphFrame, "CIS", level, course, faculty, "course_name", yVariable)
-    graphFrame.pack(expand=True, fill=BOTH)
+    # Remove Generate Button Frame
+    generateFrame.pack_forget()
+    # Add Clear Graph Button Frame
+    clearFrame.pack(fill='both', expand=True)
+    # Add the Graph Frame
+    graphing.graph_in_frame(graph1Frame, department, level, course, faculty, "course_name", yVariable)
+    graph1Frame.pack(fill='both', expand=True)
 
 # All Frames are Created Below. They are not packed until they are needed
 #------------------------------------------------------------------------------
@@ -266,6 +267,9 @@ departmentMenu = OptionMenu(
     *departments,
     style='TMenubutton',
     command=department_selected)
+ 
+departmentLabel.pack()
+departmentMenu.pack()
 
 #------------------------------------------------------------------------------
 # Comparison Option (X-Axis) Selection Frame (Instructors or Courses)
@@ -289,6 +293,10 @@ courseButton = Radiobutton(
     value=1,
     command= lambda: compare_option_selected("courses"))
 
+xAxisLabel.pack()
+instructorButton.pack()
+courseButton.pack()
+
 #------------------------------------------------------------------------------
 # Level Selection Dropdown Menu Frame
 levelFrame = Frame(window)
@@ -304,6 +312,9 @@ levelMenu = OptionMenu(
     *levels,
     command=level_selected)
 
+levelLabel.pack()
+levelMenu.pack()
+
 #------------------------------------------------------------------------------
 # Course Selection Frame
 courseFrame = Frame(window)
@@ -318,6 +329,9 @@ courseMenu = OptionMenu(
     courseVar, 
     *courses,
     command=course_selected)
+
+courseLabel.pack()
+courseMenu.pack()
 
 #------------------------------------------------------------------------------
 # Y-Axis Selection Frame (A's or D/F's)
@@ -340,6 +354,10 @@ dfButton = Radiobutton(
     value=1,
     command=grades_selected)
 
+yAxisLabel.pack()
+aButton.pack()
+dfButton.pack()
+
 #------------------------------------------------------------------------------
 # Options - Regular Faculty and Count Frame
 optionsFrame = Frame(window)
@@ -361,6 +379,10 @@ countCheckbox = Checkbutton(
     onvalue=1,
     offvalue=0)
 
+optionsLabel.pack()
+facultyCheckbox.pack()
+countCheckbox.pack()
+
 #------------------------------------------------------------------------------
 # Generate Button Frame
 generateFrame = Frame(window)
@@ -370,9 +392,23 @@ generateButton = Button(
     style='W.TButton',
     command=generate_graph)
 
+generateButton.pack()
+
 #------------------------------------------------------------------------------
-# Generate Graph Frame
-graphFrame = Frame(window)
+# Graph Frames
+graph1Frame = Frame(window)
+graph2Frame = Frame(window)
+
+#------------------------------------------------------------------------------
+# Clear Graph / New Graph For Compairson Frame
+clearFrame = Frame(window)
+clearButton = Button(
+    clearFrame,
+    text="Clear Graph",
+    style='W.TButton',
+    command=enter_student_mode)
+
+clearButton.pack()
 
 #------------------------------------------------------------------------------
 
