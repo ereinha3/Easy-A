@@ -69,7 +69,6 @@ def department_selected(self: str) -> None:
     yAxisFrame.pack_forget()
     optionsFrame.pack_forget()
     generateFrame.pack_forget()
-    # clearFrame.pack_forget()
 
     # Add Comparison Option (X-Axis) Frame
     xAxisVar.set(-1) # Set or reset default value to nothing
@@ -176,6 +175,10 @@ def grades_selected() -> None:
     generateFrame.pack(fill=BOTH, expand=True)
 
 def clear_graph_selected() -> None:
+    # Add the generate and compare graphs buttons back to their frames when the graphs are cleared
+    generateButton.pack()
+    compareButton.pack()
+
     # Remove All Frames Other Than Department Menu Frame
     graph1Frame.pack_forget()
     graph2Frame.pack_forget()
@@ -190,6 +193,7 @@ def clear_graph_selected() -> None:
     clearFrame.pack_forget()
 
     departmentVar.set("")
+    enter_student_mode()
 
 def change_menu(menuWidget: OptionMenu, variable: StringVar, newMenu: list) -> None:
     """Replaces the menu options for an OptionMenu with the values in a list.
@@ -229,24 +233,32 @@ def clear_frame(frame: Frame) -> None:
       widgets.destroy()
 
 def generate_graph() -> None:
-    # Remove Generate Button Frame
     generateFrame.pack_forget()
-    # Add Clear Graph Button Frame
+    parameterContainerFrame.pack_forget()
     clearFrame.pack(fill='both', expand=True, side="bottom")
-    graph_current_data(graph1Frame)
-    graph1Frame.pack(fill='both', expand=True, side="left")
-    graphContainerFrame.pack(fill=BOTH, expand=True, side="right")
+
+    if graph1Frame.winfo_ismapped():
+        graph_current_data(graph2Frame)
+        graph2Frame.pack(fill='both', expand=True, side="right")
+    else:
+        graph_current_data(graph1Frame)
+        graph1Frame.pack(fill='both', expand=True, side="left")
+        graphContainerFrame.pack(fill=BOTH, expand=True, side="right")
 
 def generate_compare_graph():
-    # Remove Generate Button Frame
+    compareButton.pack_forget()
+
+    xAxisFrame.pack_forget()
+    levelFrame.pack_forget()
+    courseFrame.pack_forget()
+    yAxisFrame.pack_forget()
+    optionsFrame.pack_forget()
     generateFrame.pack_forget()
-    # Add Clear Graph Button Frame
-    clearFrame.pack(fill='both', expand=True, side="bottom")
-    graph_current_data(graph2Frame)
-    graph2Frame.pack(fill='both', expand=True, side="right")
 
-def graph_current_data(graphFrame: Frame):
+    departmentVar.set("")
+    enter_student_mode()
 
+def graph_current_data(graphFrame: Frame) -> None:
     department = naturalSci.depts_dict[departmentVar.get()]
     xVariable = xAxisVar.get()
     if xVariable == 0:
@@ -270,7 +282,14 @@ def graph_current_data(graphFrame: Frame):
     yVariable = yAxisVar.get()
     faculty = facultyVar.get()
     count = countVar.get()
-    print(f'\nDepartment: {department}\n X-Axis: {xVariable}\n Level: {level}\n Course: {course}\n Y-Axis: {yVariable}\n Include Only Faculty?: {faculty}\n Include Count?: {count}')
+    print(f"""
+          Department: {department}
+          X-Axis: {xVariable}
+          Level: {level}
+          Course: {course}
+          Y-Axis: {yVariable}
+          Include Only Faculty?:{faculty}
+          Include Count?: {count}""")
 
     clear_frame(graphFrame)
     graphing.graph_in_frame(graphFrame, department, level, course, faculty, xVariable, yVariable)
@@ -280,6 +299,7 @@ def graph_current_data(graphFrame: Frame):
 # Container Frames
 parameterContainerFrame = Frame(window)
 graphContainerFrame = Frame(window)
+buttonContainerFrame = Frame(window)
 
 #------------------------------------------------------------------------------
 # Graph Frames
@@ -433,7 +453,7 @@ generateButton.pack()
 clearFrame = Frame(window)
 clearButton = Button(
     clearFrame,
-    text="Clear Graph",
+    text="Clear Graph(s)",
     style='W.TButton',
     command=clear_graph_selected)
 
