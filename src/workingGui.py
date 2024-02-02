@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter.ttk import *
-import dataAccess as data
-import naturalSci
+import dataAccess as access
+import data.naturalSci as naturalSci
 
 
 #------------------------------------------------------------------------------
@@ -152,7 +152,7 @@ def course_selected(a: str=None, b: str=None, c: str=None) -> None:
     optionsFrame.pack_forget()
     generateFrame.pack_forget()
     
-    # Add Grade Data Frame (A's or D/F's)
+    # Add Grade access Frame (A's or D/F's)
     yAxisLabel.pack()
     aButton.pack()
     dfButton.pack()
@@ -195,7 +195,7 @@ def get_levels() -> list:
     Returns:
         list: strings representing levels
     """
-    return data.get_course_levels_by_department(naturalSci.depts_dict[departmentVar.get()])
+    return access.get_course_levels_by_department(naturalSci.depts_dict[departmentVar.get()])
 
 def get_courses() -> list:
     """Getter function to retreive the courses associated with the current department and level
@@ -203,7 +203,7 @@ def get_courses() -> list:
     Return:
         list: strings representing courses
     """
-    return data.get_course_numbers_by_department_level(naturalSci.depts_dict[departmentVar.get()], int(levelVar.get()))
+    return access.get_course_numbers_by_department_level(naturalSci.depts_dict[departmentVar.get()], int(levelVar.get()))
 
 def generate_graph() -> None:
     department = departmentVar.get()
