@@ -69,7 +69,7 @@ def department_selected(self: str) -> None:
     yAxisFrame.pack_forget()
     optionsFrame.pack_forget()
     generateFrame.pack_forget()
-    clearFrame.pack_forget()
+    # clearFrame.pack_forget()
 
     # Add Comparison Option (X-Axis) Frame
     xAxisVar.set(-1) # Set or reset default value to nothing
@@ -177,7 +177,10 @@ def grades_selected() -> None:
 
 def clear_graph_selected() -> None:
     # Remove All Frames Other Than Department Menu Frame
+    graph1Frame.pack_forget()
+    graph2Frame.pack_forget()
     graphContainerFrame.pack_forget()
+
     xAxisFrame.pack_forget()
     levelFrame.pack_forget()
     courseFrame.pack_forget()
@@ -226,44 +229,24 @@ def clear_frame(frame: Frame) -> None:
       widgets.destroy()
 
 def generate_graph() -> None:
-    # Gathering Parameters
-    department = naturalSci.depts_dict[departmentVar.get()]
-    xVariable = xAxisVar.get()
-    if xVariable == 0:
-        xVariable = "instructor"
-    else:
-        xVariable = "course_name"
-
-    level = levelVar.get()
-    if level == "All":
-        level = -1
-    else:
-        level = int(level)
-
-    course = courseVar.get()
-    if course == "All" or course == "":
-        course = -1
-    else:
-        course = int(course)
-
-    course = courseVar.get()
-    yVariable = yAxisVar.get()
-    faculty = facultyVar.get()
-    count = countVar.get()
-    print(f'\nDepartment: {department}\n X-Axis: {xVariable}\n Level: {level}\n Course: {course}\n Y-Axis: {yVariable}\n Include Only Faculty?: {faculty}\n Include Count?: {count}')
-
     # Remove Generate Button Frame
     generateFrame.pack_forget()
     # Add Clear Graph Button Frame
-    clearFrame.pack(fill='both', expand=True)
-    # Add the Graph Frame
-    clear_frame(graph1Frame)
-    graphing.graph_in_frame(graph1Frame, department, level, course, faculty, xVariable, yVariable)
+    clearFrame.pack(fill='both', expand=True, side="bottom")
+    graph_current_data(graph1Frame)
     graph1Frame.pack(fill='both', expand=True, side="left")
     graphContainerFrame.pack(fill=BOTH, expand=True, side="right")
 
 def generate_compare_graph():
-    # Gathering Parameters
+    # Remove Generate Button Frame
+    generateFrame.pack_forget()
+    # Add Clear Graph Button Frame
+    clearFrame.pack(fill='both', expand=True, side="bottom")
+    graph_current_data(graph2Frame)
+    graph2Frame.pack(fill='both', expand=True, side="right")
+
+def graph_current_data(graphFrame: Frame):
+
     department = naturalSci.depts_dict[departmentVar.get()]
     xVariable = xAxisVar.get()
     if xVariable == 0:
@@ -289,15 +272,8 @@ def generate_compare_graph():
     count = countVar.get()
     print(f'\nDepartment: {department}\n X-Axis: {xVariable}\n Level: {level}\n Course: {course}\n Y-Axis: {yVariable}\n Include Only Faculty?: {faculty}\n Include Count?: {count}')
 
-    # Remove Generate Button Frame
-    generateFrame.pack_forget()
-    # Add Clear Graph Button Frame
-    clearFrame.pack(fill='both', expand=True)
-    # Add the Graph Frame
-    clear_frame(graph2Frame)
-    graphing.graph_in_frame(graph2Frame, department, level, course, faculty, xVariable, yVariable)
-    graph2Frame.pack(fill='both', expand=True, side="right")
-    # graphContainerFrame.pack(fill=BOTH, expand=True, side="right")
+    clear_frame(graphFrame)
+    graphing.graph_in_frame(graphFrame, department, level, course, faculty, xVariable, yVariable)
 
 # All Frames are Created Below. They are not packed until they are needed
 #------------------------------------------------------------------------------
@@ -453,13 +429,14 @@ generateButton = Button(
 generateButton.pack()
 
 #------------------------------------------------------------------------------
-# Clear Graph / New Graph For Compairson Frame
-clearFrame = Frame(parameterContainerFrame)
+# Clear Graph Button Frame
+clearFrame = Frame(window)
 clearButton = Button(
     clearFrame,
     text="Clear Graph",
     style='W.TButton',
     command=clear_graph_selected)
+
 compareButton = Button(
     clearFrame,
     text="Generate Additional Graph",
