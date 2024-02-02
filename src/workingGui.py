@@ -5,11 +5,11 @@ Originally created by Darby Wright (daw) on 1/18
 
 
 """
-
 from tkinter import *
 from tkinter.ttk import *
 import dataAccess as access
 import data.naturalSci as naturalSci
+import graphing
 
 
 #------------------------------------------------------------------------------
@@ -228,12 +228,27 @@ def get_courses() -> list:
 def generate_graph() -> None:
     department = departmentVar.get()
     xVariable = xAxisVar.get()
+
     level = levelVar.get()
+    if level == "All":
+        level = -1
+    else:
+        level = int(level)
+
+    course = courseVar.get()
+    if course == "All" or course == "":
+        course = -1
+    else:
+        course = int(course)
+
     course = courseVar.get()
     yVariable = yAxisVar.get()
     faculty = facultyVar.get()
     count = countVar.get()
     print(f'\nDepartment: {department}\n X-Axis: {xVariable}\n Level: {level}\n Course: {course}\n Y-Axis: {yVariable}\n Include Only Faculty?: {faculty}\n Include Count?: {count}')
+
+    graphing.graph_in_frame(graphFrame, "CIS", level, course, faculty, "course_name", yVariable)
+    graphFrame.pack(expand=True, fill=BOTH)
 
 # All Frames are Created Below. They are not packed until they are needed
 #------------------------------------------------------------------------------
@@ -354,6 +369,10 @@ generateButton = Button(
     text="Generate Graph",
     style='W.TButton',
     command=generate_graph)
+
+#------------------------------------------------------------------------------
+# Generate Graph Frame
+graphFrame = Frame(window)
 
 #------------------------------------------------------------------------------
 
