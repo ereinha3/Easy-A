@@ -1,6 +1,10 @@
-"""Graphical User Interface for CS422, Group 7, Project 1 - EasyA (or JustPass)
+"""Graphical User Interface Module
+CS422, Group 7, Project 1 - EasyA (or JustPass)
 
-Originally created by Darby Wright (daw) on 1/18
+Created by Darby W. (daw) on 1/20/2024
+
+Contributors:
+Ethan R. (ear)
 
 """
 from tkinter import *
