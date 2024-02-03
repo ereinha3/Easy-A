@@ -23,8 +23,7 @@ if tests_dir != cur_dir:
 import unittest
 import scrapedNames
 import gradeDataNames
-# FIXME change to data access module once name-matching logic is moved over
-import nameMatch as nameMatch
+import nameMatch
 
 expand_prints = False
 
@@ -162,7 +161,7 @@ class TestNameMatch(unittest.TestCase):
         # create dict from scraped names sample
         names_dict = nameMatch.scraped_names_to_dict(scrapedNames.scraped_names_sample)
         # try to match name
-        result = nameMatch.match_name(example_name, names_dict)
+        result = nameMatch.match_name(example_name)
         self.assertEqual(["Eric A. Johnson"], result)
 
 
@@ -176,7 +175,7 @@ class TestNameMatch(unittest.TestCase):
         scraped_names = ["Jon A. Doe", "John B. Doe", "John C. Smith"]
         names_dict = nameMatch.scraped_names_to_dict(scraped_names)
         # try to match name
-        result = nameMatch.match_name(example_name, names_dict)
+        result = nameMatch.match_name(example_name)
         self.assertEqual(["Jon A. Doe"], result)
 
     def test_match_wordy_last_name(self):
@@ -192,7 +191,7 @@ class TestNameMatch(unittest.TestCase):
                          "Jocelyn Rigantona Chioma Tufayl Regin"]
         names_dict = nameMatch.scraped_names_to_dict(scraped_names)
         # try to match name
-        result = nameMatch.match_name(example_name, names_dict)
+        result = nameMatch.match_name(example_name)
         self.assertEqual(["Jocelyn Rigantona Chioma Tufayl Regin"], result)
 
     def test_match_wordy_given_name(self):
@@ -211,7 +210,7 @@ class TestNameMatch(unittest.TestCase):
                          "Jeanne Ita Anatu Keller Sargon"] # wrong
         names_dict = nameMatch.scraped_names_to_dict(scraped_names)
         # try to match name
-        result = nameMatch.match_name(example_name, names_dict)
+        result = nameMatch.match_name(example_name)
         expected = ["Jeanne Ita Anatu Kenina Sargon",
                     "J. Ita Anatu Kenina Sargon",
                     "Jeanne Ita Anatu Kenina Neva Sargon",

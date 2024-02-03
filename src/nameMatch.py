@@ -23,9 +23,53 @@ Last: complete
 Last names are commonly more than one word long!
 """
 
-from data.faculty_names import faculty_names as names_dict
+import context
+import importlib
 
-def match_last_name(instructor_name: str) -> list[str]:
+global faculty_names
+faculty_names = None
+
+
+def scraped_names_to_dict(scraped_names: list[str]) -> None:
+    """
+    Given list or set of scraped faculty names of format "First Middle Last",
+    Create dict mapping last word of last name -> list of faculty names
+    e.g. "smith" -> ["John A. Smith", "Peter Shoemaker Smith"]
+    This dict is stored at ./data/faculty_names.py
+    """
+    scraped_names_dict: dict[str, list[str]] = {}
+    for name in scraped_names:
+        # get last word of last name and canonicalize to get dict key
+        last_name = name.split(" ")[-1]
+        dict_key = "".join(char.lower() for char in last_name if char.isalpha())
+        # append to list stored in dict at key
+        if not scraped_names_dict.get(dict_key):
+            scraped_names_dict[dict_key] = [name]
+        else:
+            scraped_names_dict[dict_key].append(name)
+
+    # store scraped names dict in faculty_names.py file
+    faculty_names_file = open("./data/faculty_names.py", "w")
+    faculty_names_file.write(f"faculty_names: dict[str, list[str]] = {str(scraped_names_dict)}")
+    faculty_names_file.close()
+
+    # reload these names for name matching
+    _reload_names_dict()
+
+def _reload_names_dict():
+    """
+    Force Python to re-import the data/faculty_names.py module.
+    This ensures names are matched to the newest available data.
+    This should be called by scraped_names_to_dict().
+    """
+    global faculty_names
+    try:
+        import data.faculty_names as faculty_names
+        importlib.reload(faculty_names)
+    except ImportError:
+        faculty_names = None
+
+def _match_last_name(instructor_name: str, names_dict: dict[str, list[str]]) -> list[str]:
     """
     This is the initial step for matching a name.
     Given a name from gradedata, find scraped names with the same last name.
@@ -41,7 +85,7 @@ def match_last_name(instructor_name: str) -> list[str]:
     #get all names in dict whose key is the cleaned last name
     names_at_key = names_dict.get(search_key)
     if not names_at_key:
-        return
+        return []
 
     # make sure all last names match (account for multiple last names)
     result = []
@@ -62,15 +106,14 @@ def match_last_name(instructor_name: str) -> list[str]:
     return result
 
 
-def match_nth_name(instructor_name: str, n: int, candidate_names: list[str]) -> list[str]:
+def _match_nth_name(instructor_name: str, n: int, candidate_names: list[str]) -> list[str]:
     """
     This is the next step for matching a name, after last_name_match()
     Given a name from gradedata and candidate names from last_name_match(),
     Return list of candidate names with matching nth name (first or middle).
     """
-
     if not candidate_names:
-        return
+        return []
 
     # get nth name and canonicalize
     nth_name = instructor_name.split(",")[1].strip().split(" ")[n]
@@ -109,11 +152,19 @@ def match_name(instructor_name: str) -> list[str]:
     Keyword arguments:
     instructor_name -- the full name of an instructor
     """
+    # make sure scraped faculty names are available
+    global faculty_names
+    if not faculty_names:
+        _reload_names_dict()
+    if not faculty_names:
+        raise Exception("Tried to match name without a valid scraped faculty names dictionary")
+    names_dict = faculty_names.faculty_names
+
     # first, filter out by last name
-    candidates = match_last_name(instructor_name)
+    candidates = _match_last_name(instructor_name, names_dict)
     print(candidates)
     # then, filter out by given names (first or middle)
     num_given_names = len(instructor_name.split(",")[1].strip().split(" "))
     for n in range(num_given_names):
-        candidates = match_nth_name(instructor_name, n, candidates)
+        candidates = _match_nth_name(instructor_name, n, candidates)
     return candidates
