@@ -70,6 +70,24 @@ def get_names_from_dept(dept_url: str) -> list[str]:
 
     return faculty_list
 
+def scraped_names_to_dict(scraped_names: list[str]) -> dict[str, list[str]]:
+    """
+    Given list or set of scraped faculty names of format "First Middle Last"
+    Return dict mapping last word of last name -> list of faculty names
+    e.g. "smith" -> ["John A. Smith", "Peter Shoemaker Smith"]
+    """
+    scraped_names_dict: dict[str, list[str]] = {}
+    for name in scraped_names:
+        # get last word of last name and canonicalize to get dict key
+        last_name = name.split(" ")[-1]
+        dict_key = "".join(char.lower() for char in last_name if char.isalpha())
+        # append to list stored in dict at key
+        if not scraped_names_dict.get(dict_key):
+            scraped_names_dict[dict_key] = [name]
+        else:
+            scraped_names_dict[dict_key].append(name)
+    return scraped_names_dict
+
 def main() -> None:
     """
     Call the web scraper
@@ -93,7 +111,7 @@ def main() -> None:
     print(f"Found a total of {len(names_list)} names")
 
     f = open("./data/faculty_names.py", "w")
-    f.write("faculty_names = " + str(set(names_list)))
+    f.write("faculty_names: dict[list[str]] = " + str(scraped_names_to_dict(names_list)))
     f.close()
 
 if __name__ == "__main__":

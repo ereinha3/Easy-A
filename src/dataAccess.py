@@ -1,3 +1,10 @@
+"""
+Author: Morgan Jones
+Last Updated: 02/02/2024
+
+This module provides an interface through which to efficiently and easily query data from the gradeDict.py data file. This includes a series of simple, standalone helper functions to fetch specific data sets for GUI user input display, for tests (such as faculty name matching tests) and more complicated functions for grouping and aggregating data.
+"""
+
 from data.gradeDict import gradeDict
 from nameMatch import match_name
 
@@ -10,28 +17,52 @@ def filter_courses_by_level(courses: dict[dict], level: int) -> dict[dict]:
 	return { key: value for key, value in courses.items() if key // 100 == level // 100 }
 
 def get_course_numbers_by_department(departmentName: str) -> list[int]:
-    """Returns a list of all course numbers (i.e. 111, 112, 221...) that exist within a department."""
-    return [ courseNumber for courseNumber in gradeDict[departmentName].keys() ]
+	"""Returns a list of all course numbers (i.e. 111, 112, 221...) that exist within a department."""
+	return [ courseNumber for courseNumber in gradeDict[departmentName].keys() ]
 
 def get_course_levels_by_department(departmentName: str) -> list[int]:
-    """Returns a list of all course levels (i.e. 100, 200, 300...) that exist within a department."""
-    levels = set()
-    for courseNumber in gradeDict[departmentName].keys():
-        levels.add(courseNumber // 100 * 100)
-    return list(levels)
+	"""Returns a list of all course levels (i.e. 100, 200, 300...) that exist within a department."""
+	levels = set()
+	for courseNumber in gradeDict[departmentName].keys():
+		levels.add(courseNumber // 100 * 100)
+	return list(levels)
 
 def get_course_numbers_by_department_level(departmentName: str, level: int) -> list[int]:
-    """Returns a list of all course numbers that exist with a department, filtered by a specific level."""
-    return [ courseNumber for courseNumber in gradeDict[departmentName].keys() if courseNumber // 100 == level // 100 ]
+	"""Returns a list of all course numbers that exist with a department, filtered by a specific level."""
+	return [ courseNumber for courseNumber in gradeDict[departmentName].keys() if courseNumber // 100 == level // 100 ]
 
 def get_department_names() -> list[str]:
-    """Return the code names for all departments."""
-    return [ name for name in gradeDict.keys() ]
+	"""Return the code names for all departments."""
+	return [ name for name in gradeDict.keys() ]
+
+def get_all_instructors() -> set[str]:
+	"""Returns a set of instructor names across all departments."""
+	names = set()
+	for department, course in gradeDict.items():
+		for entry in course.values():
+			for instance in entry:
+				names.add(instance.get("instructor"))
+	return names
+
+def get_instructors_by_department(department: str) -> set[str]:
+	"""Returns a set of instructor names across all departments."""
+	names = set()
+	for course, entries in gradeDict[department].items():
+		for instance in entries:
+			names.add(instance.get("instructor"))
+	return names
+
+def get_instructors_from_courses(courses: dict[list[dict]]) -> set[str]:
+	"""Return a set of instructors who have taught some filtered subset of courses."""
+	instructors = set()
+	for course, entries in courses.items():
+		for instance in entries:
+			instructors.add(instance["instructor"])
+	return instructors
 
 def filter_by_faculty_only(courses: dict[dict]) -> dict[dict]:
-    match_name()
-	"""Not yet implemented"""
-	return False
+	"""Returns a dictionary of courses, where the course instances have been filtered only to include those instances taught by a permanent faculty member."""
+	return { course : [ instance for instance in entries if match_name(instance["instructor"]) ] for course, entries in courses.items() }
 
 def accum(currentDict: dict[str, int], newDict: dict[str, int]) -> dict[str, int]:
 	"""
@@ -60,7 +91,8 @@ def group_by(groupKey: str, courses: dict[dict]) -> dict[dict]:
 				groupByData[entryName] = accum(groupByData[entryName], gradeData)
 	return groupByData
 
-def agg_data(groupByData):
+def agg_data(groupByData) -> dict[dict]:
+	"""Normalizes accumulated grade data by course_count and returns a dictionary with only the group key, the course_count and the grade data."""
 	for key, value in groupByData.items():
 		courseCount = groupByData[key]["course_count"]
 		groupByData[key].update({key: value / courseCount for key, value in groupByData[key].items() if "prec" in key})
@@ -101,12 +133,17 @@ def query_graphing_data(department: str, level: int = -1, groupKey: str = "instr
 		courses = { level: courses[level] }
 
 	#apply faculty only filter if given
-	#not yet implemented
-
+	courses = filter_by_faculty_only(courses) if filterFaculty else courses
+	
 	return agg_data(group_by(groupKey, courses))
 
 if __name__ == "__main__":
 	#Example use for demonstration
-	data = query_graphing_data("math", -1, "instructor", False)
-	for key, value in data.items():
-		print(key, value)
+	dep = get_courses_by_department("MATH")
+	#print(get_all_instructors())
+	facultyDep = filter_by_faculty_only(dep)
+	print(get_instructors_from_courses(dep))
+	print(get_instructors_from_courses(facultyDep))
+	#data = query_graphing_data("math", -1, "instructor", False)
+	#for key, value in data.items():
+	#	print(key, value)

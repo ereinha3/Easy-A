@@ -23,19 +23,9 @@ Last: complete
 Last names are commonly more than one word long!
 """
 
-# import modules
-from typing import Union
+from data.faculty_names import faculty_names as names_dict
 
-# get scraped data and gradedata
-# FIXME change to correct sources (currently using sample data)
-import test.scrapedNames
-import test.gradeDataNames
-
-scraped_names = test.scrapedNames.scraped_names_sample
-gradedata_names = test.gradeDataNames.gradedata_names_sample
-
-
-def match_last_name(instructor_name: str, gradedata_names_dict: dict[str, list[str]]) -> list[str]:
+def match_last_name(instructor_name: str) -> list[str]:
     """
     This is the initial step for matching a name.
     Given a name from gradedata, find scraped names with the same last name.
@@ -44,8 +34,14 @@ def match_last_name(instructor_name: str, gradedata_names_dict: dict[str, list[s
     last_names_list = instructor_name.split(",")[0].strip().split(" ")
     # get last word of last name and canonicalize for search key
     last_last_name = last_names_list[-1]
+
+    #trim non-alphanumeric characters from name
     search_key = "".join(char for char in last_last_name if char.isalpha()).lower()
-    names_at_key = gradedata_names_dict.get(search_key)
+
+    #get all names in dict whose key is the cleaned last name
+    names_at_key = names_dict.get(search_key)
+    if not names_at_key:
+        return
 
     # make sure all last names match (account for multiple last names)
     result = []
@@ -72,6 +68,10 @@ def match_nth_name(instructor_name: str, n: int, candidate_names: list[str]) -> 
     Given a name from gradedata and candidate names from last_name_match(),
     Return list of candidate names with matching nth name (first or middle).
     """
+
+    if not candidate_names:
+        return
+
     # get nth name and canonicalize
     nth_name = instructor_name.split(",")[1].strip().split(" ")[n]
     nth_name = "".join(char for char in nth_name if char.isalpha()).lower()
@@ -101,32 +101,17 @@ def match_nth_name(instructor_name: str, n: int, candidate_names: list[str]) -> 
             result.append(candidate_name)
     return result
 
-def scraped_names_to_dict(scraped_names: Union[list[str], set[str]]) -> dict[str, list[str]]:
-    """
-    Given list or set of scraped faculty names of format "First Middle Last"
-    Return dict mapping last word of last name -> list of faculty names
-    e.g. "smith" -> ["John A. Smith", "Peter Shoemaker Smith"]
-    """
-    scraped_names_dict: dict[str, list[str]] = {}
-    for name in scraped_names:
-        # get last word of last name and canonicalize to get dict key
-        last_name = name.split(" ")[-1]
-        dict_key = "".join(char.lower() for char in last_name if char.isalpha())
-        # append to list stored in dict at key
-        if not scraped_names_dict.get(dict_key):
-            scraped_names_dict[dict_key] = [name]
-        else:
-            scraped_names_dict[dict_key].append(name)
-    return scraped_names_dict
-
-def match_name(instructor_name: str, names_dict: dict[str, list[str]]) -> list[str]:
+def match_name(instructor_name: str) -> list[str]:
     """
     Given an instructor name from gradedata, return a list of matching scraped names.
     The list may be empty (no matches) or have multiple names (equally likely matches).
-    This function assumes you ran scraped_names_to_dict() to get names_dict.
+
+    Keyword arguments:
+    instructor_name -- the full name of an instructor
     """
     # first, filter out by last name
-    candidates = match_last_name(instructor_name, names_dict)
+    candidates = match_last_name(instructor_name)
+    print(candidates)
     # then, filter out by given names (first or middle)
     num_given_names = len(instructor_name.split(",")[1].strip().split(" "))
     for n in range(num_given_names):
