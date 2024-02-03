@@ -4,7 +4,9 @@ Author: Morgan Jones
 The purpose of this file is to intake a gradedata.js file (supplied by daily emerald) and to translate that javascript object into a python dictionary for use by the data access module.
 """
 
-f = open("gradedata.js", "r")
+import context
+
+f = open("./data/gradedata.js", "r")
 data = f.read()
 f.close()
 
@@ -42,4 +44,4 @@ def write_dict_to_file(dataName: str, dataBody: dict, filename: str):
     f.write(dataName + " = " + str(dataBody))
     f.close()
 
-write_dict_to_file("./data/gradeDict", create_grade_dict(), "gradeDict.py")
+write_dict_to_file("gradeDict", create_grade_dict(), "./data/gradeDict.py")
