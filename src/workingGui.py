@@ -1,10 +1,18 @@
-"""Graphical User Interface Module
+"""
+Graphical User Interface Module
 CS422, Group 7, Project 1 - EasyA (or JustPass)
 
-Created by Darby W. (daw) on 1/20/2024
+Created on 1/20/2024
 
 Contributors:
 Ethan R. (ear)
+Darby W. (daw)
+
+- partial implementation of object oriented version - ear 1/20/2024
+- switched to functional rather than object oriented - daw 1/25/2024
+- added styles to buttons and menus - daw 1/30/2024
+- refactored to elminate repition within the code - daw 1/30/2024
+- side-by-side comparison imlpemented - daw 1/31/2024
 
 """
 from tkinter import *
@@ -19,16 +27,26 @@ import graphing
 window = Tk()
 window.title('Grade Display')
 window.config(bg='grey')
-window.minsize(width=250, height=250)
+window.minsize(width=300, height=100)
 
 #------------------------------------------------------------------------------
 # Styles
 style = Style()
  
 style.configure(
-    'W.TButton',
+    'G.TButton',
     font = ('calibri', 18, 'bold', 'underline'),
     foreground = 'green')
+
+style.configure(
+    'R.TButton',
+    font = ('calibri', 18, 'bold', 'underline'),
+    foreground = 'red')
+
+style.configure(
+    'B.TButton',
+    font = ('calibri', 18, 'bold', 'underline'),
+    foreground = 'blue')
 
 style.configure(
     'TLabel',
@@ -53,33 +71,36 @@ def enter_student_mode() -> None:
     Returns:
         None
     """
-    departmentMenu["menu"].configure(font = ('calibri', 12))
-    # Add Department Menu Frame
+    # First parameter - pack the parameter container and the department selection frames
     parameterContainerFrame.pack(fill=BOTH, expand=True, side='left')
     departmentFrame.pack(fill=BOTH, expand=True)
 
-def department_selected(self: str) -> None:
+def department_selected(self: str = None) -> None:
     """Called every time the user selects or changes the department menu option.
+
+    Clears all parameter frames below the comparison option (x-axis) frame and
+    resets the comparison option.
     
     Args:
-        self (str): The department that was selected
+        self (str): The department that was selected (unused)
 
     Returns:
         None
     """
-    # Remove all frames below comparison option (x-axis) frame
     levelFrame.pack_forget()
     courseFrame.pack_forget()
     yAxisFrame.pack_forget()
     optionsFrame.pack_forget()
     generateFrame.pack_forget()
 
-    # Add Comparison Option (X-Axis) Frame
-    xAxisVar.set(-1) # Set or reset default value to nothing
+    xAxisVar.set(-1) # Set value to nothing
+    # Second parameter - pack the compare option (x-axis) frame
     xAxisFrame.pack(fill=BOTH, expand=True)
 
 def compare_option_selected(choice: str) -> None:
     """Called every time the user selects or changes a comparison option.
+
+    Clears all parameter frames below the level selection frame.
     
     Args:
         choice (str): the choice the user selected, either "instructor" or "courses"
@@ -87,7 +108,6 @@ def compare_option_selected(choice: str) -> None:
     Returns:
         None
     """
-    # Clear all frames below the level menu selection frame
     courseFrame.pack_forget()
     yAxisFrame.pack_forget()
     optionsFrame.pack_forget()
@@ -97,23 +117,22 @@ def compare_option_selected(choice: str) -> None:
     if choice == "instructors":
         levels.append("All") # Only allow "All" levels as an option when comparing instructors
 
+    # Get levels for selected department, and update the level selection dropdown menu
     levels += get_levels()
-    change_menu(levelMenu, levelVar, levels)
+    update_menu(levelMenu, levelVar, levels)
     levelVar.set("")
 
-    # print(levelMenu["menu"].keys())
-    levelMenu["menu"].configure(font = ('calibri', 12))
-    # Add Level Menu Frame
+    # Third parameter - pack the level selection frame
     levelFrame.pack(fill=BOTH, expand=True)    
 
-def level_selected(a: str=None, b: str=None, c: str=None) -> None:
+def level_selected(a: str = None, b: str = None, c: str = None) -> None:
     """Called every time the level selected variable is changed.
     This happens whenever the set() method is called on the levelVar
     variable, or when the user selects or changes the level menu option.
 
     Input: All inputs are dummy inputs and don't do anything. The nature
         of a trace callback requires a callback function that takes 3
-        strings as input.
+        strings as input, representing qualities of the trace.
 
     Returns:
         None
@@ -122,7 +141,7 @@ def level_selected(a: str=None, b: str=None, c: str=None) -> None:
         # Only continue if the level variable has been set
         return
     
-    # Clear all frames below the level frame
+    # Clear all parameter frames below the level frame
     courseFrame.pack_forget()
     yAxisFrame.pack_forget()
     optionsFrame.pack_forget()
@@ -130,17 +149,17 @@ def level_selected(a: str=None, b: str=None, c: str=None) -> None:
     
     if xAxisVar.get() == 1 or levelVar.get() == "All":
         # If compare by courses selected, or if compare by instructor w/ "All" levels selected,
-        # theres no need to pack the course frame since no individual course will be selected
-        course_selected()
+        # there is no need to pack the course frame since no individual course will be selected
+        course_selected() # Continue as if a course has been selected
         return
     
+    # Get courses for selected department and level, and update the course selection dropdown menu
     courses = ["All"] + get_courses()
-    change_menu(courseMenu, courseVar, courses)
+    update_menu(courseMenu, courseVar, courses)
     courseVar.set("")
 
-    courseMenu["menu"].configure(font = ('calibri', 12))
-    # Add Course Menu Frame
-    courseFrame.pack(fill=BOTH, expand=True)
+    # Fourth parameter - pack the course selection frame
+    courseFrame.pack(fill=BOTH, expand=True) 
 
 def course_selected(a: str=None, b: str=None, c: str=None) -> None:
     """Called every time the course selected variable is changed.
@@ -163,40 +182,64 @@ def course_selected(a: str=None, b: str=None, c: str=None) -> None:
     optionsFrame.pack_forget()
     generateFrame.pack_forget()
     
-    # Add Grade access Frame (A's or D/F's)
-    yAxisVar.set(0)
+    
+    yAxisVar.set(0) # Comparing A's is the default grade (y-axis) option
+    # Fifth parameter - pack the grade option (y-axis) frame
     yAxisFrame.pack(fill=BOTH, expand=True)
+
+    # Since comparing A's is the default, we don't need to wait for user input.
+    # The program will continue as if a grade option has been selected
     grades_selected()
 
 def grades_selected() -> None:
-    """Called every time the user selects or changes the grade option."""
-    # Add Options Frame
+    """Called every time the user selects or changes the grade option.
+    
+    Returns:
+        None
+    """
     facultyVar.set(0)
     countVar.set(0)
+    # Sixth and seventh parameters - pack the options frame
     optionsFrame.pack(fill=BOTH, expand=True)
 
-    # Add Generate Button Frame
+    # Pack generate graph frame
     generateFrame.pack(fill=BOTH, expand=True)
 
 def generate_graph_selected() -> None:
+    """Called every time the genereate graph button is pressed.
+
+    Returns:
+        None
+    """
     generateFrame.pack_forget()
+    # Clear the parameter container frame, allowing the graph to fill the window
     parameterContainerFrame.pack_forget()
+
     clearGraphsFrame.pack(fill='both', expand=True, side="bottom")
 
-    if graph1Frame.winfo_ismapped():
+    if graph1Frame.winfo_ismapped(): # Check if first graph is already in the window
+        # If so we need to generate and pack the second graph
         generate_graph_frame(graph2Frame)
         graph2Frame.pack(fill='both', expand=True, side="right")
     else:
         generate_graph_frame(graph1Frame)
         graph1Frame.pack(fill='both', expand=True, side="left")
+        # Graph container needs to be packed when generating and packing the first graph
         graphContainerFrame.pack(fill=BOTH, expand=True, side="right")
 
 def clear_graph_selected() -> None:
-    # Add the generate and compare graphs buttons back to their frames when the graphs are cleared
-    generateButton.pack()
-    compareGraphsButton.pack()
+    """Called when the clear graph button is pressed.
 
-    # Remove All Frames Other Than Department Menu Frame
+    Clears the graphs from the screen and restores all frames to their original state.
+
+    Returns:
+        None
+    """
+    # Add the generate graph and side-by-side buttons back to their frames when the graphs are cleared
+    generateButton.pack()
+    sideBySideButton.pack()
+
+    # Clear all graph frames, including the container
     graph1Frame.pack_forget()
     graph2Frame.pack_forget()
     graphContainerFrame.pack_forget()
@@ -209,11 +252,21 @@ def clear_graph_selected() -> None:
     generateFrame.pack_forget()
     clearGraphsFrame.pack_forget()
 
-    departmentVar.set("")
+    departmentVar.set("") # Reset department selected
     enter_student_mode()
+ 
+def side_by_side_selected() -> None:
+    """Called every time the side-by-side comparison button is pressed.
 
-def compare_graphs_selected() -> None:
-    compareGraphsButton.pack_forget()
+    Clears all parameter frames below the department selection frame and resets
+    the department selected, while keeping the graph container frame in tact and on screen.
+    Then begins the process of asking for the parameters of the second graph.
+
+    Returns:
+        None
+    """
+    # Clear the side-by-side button so it can't be pressed again until the graphs are cleared
+    sideBySideButton.pack_forget()
 
     xAxisFrame.pack_forget()
     levelFrame.pack_forget()
@@ -227,7 +280,7 @@ def compare_graphs_selected() -> None:
 
 #------------------------------------------------------------------------------
 # Helper Functions
-def change_menu(menuWidget: OptionMenu, variable: StringVar, newMenu: list) -> None:
+def update_menu(menuWidget: OptionMenu, variable: StringVar, newMenu: list) -> None:
     """Replaces the menu options for an OptionMenu with the values in a list.
     
     Args:
@@ -326,6 +379,8 @@ departmentMenu = OptionMenu(
     *departments,
     style='TMenubutton',
     command=department_selected)
+
+departmentMenu["menu"].configure(font = ('calibri', 12)) # Styling the menu
  
 departmentLabel.pack()
 departmentMenu.pack()
@@ -371,6 +426,8 @@ levelMenu = OptionMenu(
     *levels,
     command=level_selected)
 
+levelMenu["menu"].configure(font = ('calibri', 12))
+
 levelLabel.pack()
 levelMenu.pack()
 
@@ -385,9 +442,11 @@ courseLabel = Label(
     text="Select a Course")
 courseMenu = OptionMenu(
     courseFrame,
-    courseVar, 
+    courseVar,
     *courses,
     command=course_selected)
+
+courseMenu["menu"].configure(font = ('calibri', 12))
 
 courseLabel.pack()
 courseMenu.pack()
@@ -448,7 +507,7 @@ generateFrame = Frame(parameterContainerFrame)
 generateButton = Button(
     generateFrame,
     text="Generate Graph",
-    style='W.TButton',
+    style='G.TButton',
     command=generate_graph_selected)
 
 generateButton.pack()
@@ -459,20 +518,20 @@ clearGraphsFrame = Frame(window)
 clearGraphsButton = Button(
     clearGraphsFrame,
     text="Clear Graph(s)",
-    style='W.TButton',
+    style='R.TButton',
     command=clear_graph_selected)
 
-compareGraphsButton = Button(
+sideBySideButton = Button(
     clearGraphsFrame,
-    text="Generate Additional Graph",
-    style='W.TButton',
-    command=compare_graphs_selected)
+    text="Side-By-Side Comparison",
+    style='B.TButton',
+    command=side_by_side_selected)
 
 clearGraphsButton.pack()
-compareGraphsButton.pack()
+sideBySideButton.pack()
 
 #------------------------------------------------------------------------------
 
 
-enter_student_mode() # bootstrap 1st frame
+enter_student_mode() # bootstrap first frame
 window.mainloop() # endless loop
