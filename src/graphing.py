@@ -15,7 +15,7 @@ def graph_in_frame(frame: Frame,
                    easyA: bool,
                    count: bool):
     """Given a tkinter frame, draws a bar graph based on the parameters
-    
+
     frame:
         A tkinter frame into which to draw the bar graph
     department:
@@ -58,17 +58,22 @@ def graph_in_frame(frame: Frame,
             x_bar.append(key)
             counts.append(value["course_count"])
 
+    if len(x_bar) == 0:
+        label = Label(frame, text="Could not find any matching data :(", padding=100)
+        label.pack(expand=True)
+        return
+
     # Cut out middle name for display purposes (makes names too long)
     for ind, name in enumerate(x_bar):
-        print(name, len(name.split(" ")))
         if len(name.split(" ")) == 3:
             x_bar[ind] = " ".join(name.split(" ")[0:2])
 
     # Sort graph based on decreasing %A's or increasing %D's/F's
+    print(x_bar, y_bar)
     if easyA == True:
-        y_bar, x_bar = zip(*sorted(zip(y_bar, x_bar)))
-    else:
         y_bar, x_bar = zip(*sorted(zip(y_bar, x_bar), reverse=True))
+    else:
+        y_bar, x_bar = zip(*sorted(zip(y_bar, x_bar), reverse=False))
 
     # Add the plot to the figure and create the bar plot
     plot = fig.add_subplot(111)
