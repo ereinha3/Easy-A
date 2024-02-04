@@ -6,6 +6,8 @@ import dataAccess
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 
+import data.naturalSci as naturalSci
+
 def graph_in_frame(frame: Frame, 
                    department: str, 
                    courseLevel: int, 
@@ -48,6 +50,7 @@ def graph_in_frame(frame: Frame,
     y_bar = []
     x_bar = []
     counts = []
+
     # Build up labels, values, and counts for bar plot
     for key, value in dept_data.items():
         if value["course_count"] > 0:
@@ -90,10 +93,15 @@ def graph_in_frame(frame: Frame,
 
     # Set labels for axes
     ax = fig.axes[0]
+    department_name = ""
+    for key, value in naturalSci.depts_dict.items():
+        if value == department.upper():
+            department_name = key
+
     if(level != -1):
-        ax.set_title(f"{department.capitalize()} {level}")
+        ax.set_title(f"{department_name} {level}" + "-level" * (not (bool(level % 100))))
     else:
-        ax.set_title(f"{department.capitalize()} Department")
+        ax.set_title(f"{department_name}")
     
     if groupBy == "course_name":
         ax.set_xlabel("Course")
