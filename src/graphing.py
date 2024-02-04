@@ -11,7 +11,8 @@ def graph_in_frame(frame: Frame,
                    courseNumber: int, 
                    facultyOnly: bool, 
                    groupBy: str,
-                   easyA: bool):
+                   easyA: bool,
+                   count: bool):
     """Given a tkinter frame, draws a bar graph based on the parameters
     
     frame:
@@ -28,9 +29,15 @@ def graph_in_frame(frame: Frame,
     fig = Figure(figsize = (5, 5), dpi = 100)
     # TODO
     # Change the logic for course level selection
-    dept_data = dataAccess.query_graphing_data(department, courseNumber, groupBy, filterFaculty=facultyOnly)
+    if not courseNumber:
+        level = courseLevel
+    else:
+        level = courseNumber
+    dept_data = dataAccess.query_graphing_data(department, level, groupBy, filterFaculty=facultyOnly)
+    print(dept_data)
     y_bar = []
     x_bar = []
+    counts = []
     for key, value in dept_data.items():
         if value["course_count"] > 0:
             if easyA == True:
@@ -38,9 +45,15 @@ def graph_in_frame(frame: Frame,
             else:
                 y_bar.append(dept_data[key]["dprec"] + dept_data[key]["fprec"])
             x_bar.append(key)
+            counts.append(value["course_count"])
     
     plot = fig.add_subplot(111)
-    plot.bar(x_bar, y_bar)
+    plot.bar(x_bar, y_bar, align='center')
+    if count:
+        for x, y, c in zip(x_bar, y_bar, counts):
+            plot.annotate(f'{c}', xy=(x, y), ha='center', va='center')
+            #plot.text(x,y,c)
+        
     canvas = FigureCanvasTkAgg(fig, master = frame)
     canvas.draw()
     canvas.get_tk_widget().pack()

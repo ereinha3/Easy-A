@@ -5,9 +5,7 @@ depts_dict = {
     "Chemistry and Biochemistry":"CH",
     "Human Physiology":"HPHY",
     "Mathematics":"MATH",
-    "Neuroscience":"NEUR",
     "Physics":"PHYS",
     "Psychology": "PSY",
     "Geography":"GEOG",
-    "Geological Sciences":"ERTH"
 }

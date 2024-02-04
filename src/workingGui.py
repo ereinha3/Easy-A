@@ -351,7 +351,7 @@ def generate_graph_frame(graphFrame: Frame) -> None:
           Include Count?: {count}""")
 
     clear_frame(graphFrame)
-    graphing.graph_in_frame(graphFrame, department, level, course, faculty, xVariable, yVariable)
+    graphing.graph_in_frame(graphFrame, department, level, course, faculty, xVariable, yVariable, count)
 
 # All Frames are Created Below. They are not packed until they are needed
 #------------------------------------------------------------------------------
