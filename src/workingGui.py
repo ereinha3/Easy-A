@@ -206,7 +206,7 @@ def grades_selected() -> None:
     generateFrame.pack(fill=BOTH, expand=True)
 
 def generate_graph_selected() -> None:
-    """Called every time the genereate graph button is pressed.
+    """Called every time the generate graph button is pressed.
 
     Returns:
         None
@@ -337,7 +337,7 @@ def generate_graph_frame(graphFrame: Frame) -> None:
     else:
         course = int(course)
 
-    course = courseVar.get()
+    # course = courseVar.get()
     yVariable = yAxisVar.get()
     faculty = facultyVar.get()
     count = countVar.get()
