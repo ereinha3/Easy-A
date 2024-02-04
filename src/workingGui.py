@@ -48,6 +48,7 @@ style.configure(
     font = ('calibri', 18, 'bold', 'underline'),
     foreground = 'blue')
 
+# Generic Label Style
 style.configure(
     'TLabel',
     font = ('calibri', 12, 'bold'),
@@ -58,11 +59,13 @@ style.configure(
     font = ('calibri', 18, 'bold', 'underline'),
     foreground = 'black',)
 
+# Generic Radio Button Style
 style.configure(
     'TRadiobutton',
     font = ('calibri', 12),
     foreground = 'black')
 
+# Generic Menu Button Style
 style.configure(
     'TMenubutton',
     font = ('calibri', 12),
@@ -232,7 +235,7 @@ def generate_graph_selected() -> None:
         generate_graph_frame(graph1Frame)
         graph1Frame.pack(fill='both', expand=True, side="left")
         # Graph container needs to be packed when generating and packing the first graph
-        graphContainerFrame.pack(fill=BOTH, expand=True, side="right")
+        graphContainerFrame.pack(fill=X, expand=True, side="right")
 
     courseVar.set("")
 
@@ -344,8 +347,10 @@ def generate_graph_frame(graphFrame: Frame) -> None:
     Returns:
         None
     """
+    # Get all parameters that the user 
     department = naturalSci.depts_dict[departmentVar.get()]
     xVariable = xAxisVar.get()
+
     if xVariable == 0:
         xVariable = "instructor"
     else:
@@ -377,6 +382,7 @@ def generate_graph_frame(graphFrame: Frame) -> None:
 
     clear_frame(graphFrame)
     graphFramePacker.graph_in_frame(graphFrame, department, level, course, faculty, xVariable, yVariable, count)
+
 
 # All Frames are Created Below. They are not packed until they are needed
 #------------------------------------------------------------------------------
