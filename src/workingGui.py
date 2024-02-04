@@ -212,6 +212,7 @@ def generate_graph_selected() -> None:
         None
     """
     generateFrame.pack_forget()
+    courseVar.set("")
     # Clear the parameter container frame, allowing the graph to fill the window
     parameterContainerFrame.pack_forget()
 
