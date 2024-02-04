@@ -54,6 +54,11 @@ style.configure(
     foreground = 'black')
 
 style.configure(
+    'M.TLabel',
+    font = ('calibri', 18, 'bold', 'underline'),
+    foreground = 'black',)
+
+style.configure(
     'TRadiobutton',
     font = ('calibri', 12),
     foreground = 'black')
@@ -71,6 +76,8 @@ def enter_student_mode() -> None:
     Returns:
         None
     """
+    mainLabelFrame.pack(fill=BOTH, expand=True, side='top')
+
     # First parameter - pack the parameter container and the department selection frames
     parameterContainerFrame.pack(fill=BOTH, expand=True, side='left')
     departmentFrame.pack(fill=BOTH, expand=True)
@@ -212,7 +219,6 @@ def generate_graph_selected() -> None:
         None
     """
     generateFrame.pack_forget()
-    courseVar.set("")
     # Clear the parameter container frame, allowing the graph to fill the window
     parameterContainerFrame.pack_forget()
 
@@ -227,6 +233,8 @@ def generate_graph_selected() -> None:
         graph1Frame.pack(fill='both', expand=True, side="left")
         # Graph container needs to be packed when generating and packing the first graph
         graphContainerFrame.pack(fill=BOTH, expand=True, side="right")
+
+    courseVar.set("")
 
 def clear_graph_selected() -> None:
     """Called when the clear graph button is pressed.
@@ -331,7 +339,7 @@ def generate_graph_frame(graphFrame: Frame) -> None:
     The graph is generated with the current parameters as inputs.
 
     Args:
-        graphFrame (ttk.Frame): the frame in which the graph will be packed
+        graphFrame (ttk.Frame): the frame in which the grpah will be packed
 
     Returns:
         None
@@ -382,6 +390,17 @@ graph1Frame = Frame(graphContainerFrame)
 graph2Frame = Frame(graphContainerFrame)
 
 #------------------------------------------------------------------------------
+# Main Label
+mainLabelFrame = Frame()
+mainLabel = Label(
+    mainLabelFrame,
+    text="EasyA (or Just Pass) - A Graphing Tool For Comparing Courses and Instructors",
+    padding=5,
+    style='M.TLabel')
+
+mainLabel.pack()
+
+#------------------------------------------------------------------------------
 # Department Selection Dropdown Menu Frame
 departmentFrame = Frame(parameterContainerFrame)
 departmentVar = StringVar()
@@ -389,7 +408,7 @@ departments = [""] + list(naturalSci.depts_dict.keys())
 departmentLabel = Label(
     departmentFrame,
     text="Select a Department",
-    style='TLabel')
+    style='B.TLabel')
 departmentMenu = OptionMenu(
     departmentFrame,
     departmentVar,
