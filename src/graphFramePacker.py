@@ -1,10 +1,11 @@
 from tkinter import *
 from tkinter.ttk import *
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-import dataAccess
-                                               
+
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk                                               
 from matplotlib.figure import Figure
-import matplotlib.pyplot as plt
+
+import dataAccess
+import data.naturalSci as naturalSci
 
 def graph_in_frame(frame: Frame, 
                    department: str, 
@@ -15,7 +16,7 @@ def graph_in_frame(frame: Frame,
                    easyA: bool,
                    count: bool):
     """Given a tkinter frame, draws a bar graph based on the parameters
-    
+
     frame:
         A tkinter frame into which to draw the bar graph
     department:
@@ -48,6 +49,7 @@ def graph_in_frame(frame: Frame,
     y_bar = []
     x_bar = []
     counts = []
+
     # Build up labels, values, and counts for bar plot
     for key, value in dept_data.items():
         if value["course_count"] > 0:
@@ -58,17 +60,22 @@ def graph_in_frame(frame: Frame,
             x_bar.append(key)
             counts.append(value["course_count"])
 
+    if len(x_bar) == 0:
+        label = Label(frame, text="Could not find any matching data :(", padding=100)
+        label.pack(expand=True)
+        return
+
     # Cut out middle name for display purposes (makes names too long)
     for ind, name in enumerate(x_bar):
-        print(name, len(name.split(" ")))
         if len(name.split(" ")) == 3:
             x_bar[ind] = " ".join(name.split(" ")[0:2])
 
     # Sort graph based on decreasing %A's or increasing %D's/F's
+    print(x_bar, y_bar)
     if easyA == True:
-        y_bar, x_bar = zip(*sorted(zip(y_bar, x_bar)))
-    else:
         y_bar, x_bar = zip(*sorted(zip(y_bar, x_bar), reverse=True))
+    else:
+        y_bar, x_bar = zip(*sorted(zip(y_bar, x_bar), reverse=False))
 
     # Add the plot to the figure and create the bar plot
     plot = fig.add_subplot(111)
@@ -85,10 +92,15 @@ def graph_in_frame(frame: Frame,
 
     # Set labels for axes
     ax = fig.axes[0]
+    department_name = ""
+    for key, value in naturalSci.depts_dict.items():
+        if value == department.upper():
+            department_name = key
+
     if(level != -1):
-        ax.set_title(f"{department.capitalize()} {level}")
+        ax.set_title(f"{department_name} {level}" + "-level" * (not (bool(level % 100))))
     else:
-        ax.set_title(f"{department.capitalize()} Department")
+        ax.set_title(f"{department_name}")
     
     if groupBy == "course_name":
         ax.set_xlabel("Course")
