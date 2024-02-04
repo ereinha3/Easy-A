@@ -19,7 +19,7 @@ from tkinter import *
 from tkinter.ttk import *
 import dataAccess as access
 import data.naturalSci as naturalSci
-import graphing
+import graphFramePacker
 
 
 #------------------------------------------------------------------------------
@@ -331,7 +331,7 @@ def generate_graph_frame(graphFrame: Frame) -> None:
     The graph is generated with the current parameters as inputs.
 
     Args:
-        graphFrame (ttk.Frame): the frame in which the grpah will be packed
+        graphFrame (ttk.Frame): the frame in which the graph will be packed
 
     Returns:
         None
@@ -368,7 +368,7 @@ def generate_graph_frame(graphFrame: Frame) -> None:
           Include Count?: {count}""")
 
     clear_frame(graphFrame)
-    graphing.graph_in_frame(graphFrame, department, level, course, faculty, xVariable, yVariable, count)
+    graphFramePacker.graph_in_frame(graphFrame, department, level, course, faculty, xVariable, yVariable, count)
 
 # All Frames are Created Below. They are not packed until they are needed
 #------------------------------------------------------------------------------
