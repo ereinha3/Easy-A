@@ -1,11 +1,10 @@
 from tkinter import *
 from tkinter.ttk import *
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-import dataAccess
-                                               
-from matplotlib.figure import Figure
-import matplotlib.pyplot as plt
 
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk                                               
+from matplotlib.figure import Figure
+
+import dataAccess
 import data.naturalSci as naturalSci
 
 def graph_in_frame(frame: Frame, 
