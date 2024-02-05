@@ -80,6 +80,9 @@ def _match_last_name(instructor_name: str) -> list[str]:
     global faculty_names
     names_dict = faculty_names.faculty_names
 
+    if not "," in instructor_name:
+        # do not match name that is not in Last, First order
+        return []
     last_names_list = instructor_name.strip().split(",")[0].strip().split(" ")
     # get last word of last name and canonicalize for search key
     last_last_name = last_names_list[-1]
@@ -98,8 +101,11 @@ def _match_last_name(instructor_name: str) -> list[str]:
     for i in range(len(last_names_list)):
         last_names_list[i] = "".join(char for char in last_names_list[i] if char.isalpha()).lower()
     for candidate_name in names_at_key:
+        candidate_names_list = candidate_name.strip().split(" ")
+        if len(candidate_names_list) == 1:
+            # avoid matchign empty or one-word names
+            continue
         accept_candidate = True
-        candidate_names_list = candidate_name.split(" ")
         for i in range(1, len(last_names_list) + 1):
             # canonicalize candidate names to enable comparison
             candidate_names_list[-i] = "".join(char for char in candidate_names_list[-i] if char.isalpha()).lower()
@@ -133,6 +139,9 @@ def _match_nth_name(instructor_name: str, n: int, candidate_names: list[str]) ->
     result = []
     for candidate_name in candidate_names:
         num_candidate_names = len(candidate_name.strip().split(" "))
+        if num_candidate_names <= 1:
+            # avoid matching empty or one-word names
+            continue
         if n >= num_candidate_names - num_last_names:
             # do not reject a candidate for not having nth name
             result.append(candidate_name)
@@ -164,6 +173,9 @@ def match_name(instructor_name: str) -> list[str]:
     if not faculty_names:
         raise Exception("Tried to match name without a valid scraped faculty names dictionary")
 
+    # do not match name if not in Last, First order
+    if "," not in instructor_name:
+        return []
     # first, filter out by last name
     candidates = _match_last_name(instructor_name)
     # then, filter out by given names (first or middle)

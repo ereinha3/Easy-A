@@ -172,6 +172,18 @@ class TestNameMatch(unittest.TestCase):
         if self.replace:
             os.rename("./data/tmp_faculty_names.py", "./data/faculty_names.py")
 
+    def test_match_short(self):
+        """
+        Test the full name-matching process.
+        Make sure that an empty or one-word name is never matchec.
+        """
+        example_name = "Smith,"
+        # create dict from a single-word name
+        nameMatch.scraped_names_to_dict(["Smith"])
+        # make sure there is no match
+        result = nameMatch.match_name(example_name)
+        self.assertEqual([], result)
+
     def test_match_simple(self):
         """
         Test the full name matching process with an example name from gradedata sample.
