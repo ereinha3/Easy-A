@@ -73,6 +73,12 @@ style.configure(
 
 #------------------------------------------------------------------------------
 # Command Functions
+
+def start_program() -> None:
+# Destroys the frame giving application synopsis and enters the Student Mode feature of the application
+    welcomeFrame.destroy()
+    enter_student_mode()
+
 def enter_student_mode() -> None:
     """Begins asking the user for graphing parameters.
     
@@ -407,6 +413,39 @@ mainLabel = Label(
 mainLabel.pack()
 
 #------------------------------------------------------------------------------
+# Welcome Frame
+welcomeFrame = Frame()
+welcomeLabel = Label(
+    welcomeFrame,
+    text= '''Welcome to the program!
+    ''',
+    padding=5,
+    style = "TLabel"
+    )
+initLabel = Label(
+    welcomeFrame,
+    text= '''
+    This program allows for the creation of user generated graphs by selecting input parameters for departments and courses.
+    For additional information, please refer to the README.txt file.
+    The data used for this project is the conjunction of grade data directly scraped from a published Emerald Media Group file via this url:
+    https://emeraldmediagroup.github.io/grade-data/.
+    The faculty data was directly pulled from the UO Course catalog available via this url:
+    https://web.archive.org/web/20140901091007/http://catalog.uoregon.edu/arts_sciences/
+    ''',
+    padding=5,
+    )
+startProgramButton = Button(
+    welcomeFrame,
+    text="Continue",
+    command=start_program
+)
+
+welcomeLabel.pack()
+initLabel.pack()
+startProgramButton.pack()
+welcomeFrame.pack()
+
+#------------------------------------------------------------------------------
 # Department Selection Dropdown Menu Frame
 departmentFrame = Frame(parameterContainerFrame)
 departmentVar = StringVar()
@@ -575,5 +614,5 @@ sideBySideButton.pack()
 #------------------------------------------------------------------------------
 
 
-enter_student_mode() # bootstrap first frame
+#start_program() # bootstrap first frame
 window.mainloop() # endless loop
