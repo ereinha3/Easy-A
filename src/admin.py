@@ -23,15 +23,16 @@ import os
 
 def prompt_start():
     """
-    Prompt the user to decide which featuare of the admin CLI they wish to use.
+    Prompt the user to decide which feature of the admin CLI they wish to use.
     """
     prompt_string = """Welcome to the admin interface. What would you like to do?
+0: Exit the admin tools interface
 1: Overwrite existing grade data using a new file
 2: Overwrite existing faculty names with new internet data
 3: Display information about discrepancies in name matching
 Your choice: """
     user_response = input(prompt_string)
-    while user_response.strip() not in ['1', '2', '3']:
+    while user_response.strip() not in ['0', '1', '2', '3']:
         user_response = input("Invalid choice. Please try again: ")
     return int(user_response)
 
@@ -136,7 +137,7 @@ def find_match_discrepancies():
     print(f"Found {len(gradedata_multi_match_list)} grade data names with multiple matches.")
     print(f"Found {len(scraped_no_match_list)} scraped names without a match.")
     print(f"Found {len(scraped_one_match_list)} scraped names with exactly one match.")
-    print(f"Found {len(scraped_multi_match_list)} scraped names without multiple matches.")
+    print(f"Found {len(scraped_multi_match_list)} scraped names with multiple matches.")
 
     # log lists of names to file ./data/name_match_results.py
     results_file = open("./data/name_match_results.py", "w")
@@ -156,12 +157,14 @@ def main():
     # prompt next action
     choice = prompt_start()
     # decide what to do based on user response
-    if choice == 1:
-        run_gradedata_converter()
-    elif choice == 2:
-        run_scraper()
-    elif choice == 3:
-        find_match_discrepancies()
+    while choice:
+        if choice == 1:
+            run_gradedata_converter()
+        elif choice == 2:
+            run_scraper()
+        elif choice == 3:
+            find_match_discrepancies()
+        choice = prompt_start()
     exit(0)
 
 
