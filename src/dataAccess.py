@@ -139,11 +139,11 @@ def query_graphing_data(department: str, level: int = -1, groupKey: str = "instr
 
 if __name__ == "__main__":
 	#Example use for demonstration
-	dep = get_courses_by_department("MATH")
+	dep = get_courses_by_department("CIS")
 	#print(get_all_instructors())
 	facultyDep = filter_by_faculty_only(dep)
-	print(get_instructors_from_courses(dep))
-	print(get_instructors_from_courses(facultyDep))
+	data = query_graphing_data("cis", 400, "instructor", True)
+	print(data)
 	#data = query_graphing_data("math", -1, "instructor", False)
 	#for key, value in data.items():
 	#	print(key, value)
