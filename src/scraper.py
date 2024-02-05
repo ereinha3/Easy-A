@@ -15,8 +15,7 @@ from data.naturalSci import depts_dict
 # constants
 CATALOG_URL = "https://web.archive.org/web/20140901091007/http://catalog.uoregon.edu/arts_sciences/"
 URL_DOMAIN_PREFIX = "https://web.archive.org"
-FACULTY_MATCH_TEXT = re.compile(".*Faculty.*")
-INTERNET_REQUEST_DELAY = 2
+INTERNET_REQUEST_DELAY = 1
 
 
 def get_dept_url_list(catalog_url: str) -> list[str]:
@@ -26,7 +25,11 @@ def get_dept_url_list(catalog_url: str) -> list[str]:
     Populate and return list of URLs for those departments.
     """
     # get page content in BeautifulSoup
-    page = requests.get(CATALOG_URL)
+    try:
+        page = requests.get(CATALOG_URL)
+    except requests.exceptions.ConnectionError:
+        print("The web server denied service to the web scraper. Try again later.")
+        exit(1)
     soup = BeautifulSoup(page.content, "html.parser")
 
     # get target departments (natural sciences
@@ -53,7 +56,11 @@ def get_names_from_dept(dept_url: str) -> list[str]:
     Return list of names of full-time faculty in that department.
     """
     # get page content in BeautifulSoup
-    page = requests.get(dept_url)
+    try:
+        page = requests.get(dept_url)
+    except requests.exceptions.ConnectionError:
+        print("The web server denied service to the web scraper. Try again later.")
+        exit(1)
     soup = BeautifulSoup(page.content, "html.parser")
 
     # go to the header text for the faculty list 
@@ -61,8 +68,6 @@ def get_names_from_dept(dept_url: str) -> list[str]:
     faculty_list = []
 
     if text_container:
-        #faculty_header = text_container.find(["h2", "h3"], string=FACULTY_MATCH_TEXT)
-
         # collect names until we hit the next header
         curr_element = text_container.find_next('p')
         while curr_element.get("class") == ['facultylist']:
@@ -71,7 +76,6 @@ def get_names_from_dept(dept_url: str) -> list[str]:
                 curr_element = curr_element.find_next('p')
                 continue
             faculty_list.append(curr_element.text.split(',')[0])
-            print(curr_element.get("class"), curr_element.text)
             curr_element = curr_element.find_next('p')
 
     return faculty_list
@@ -84,7 +88,6 @@ def scrape_faculty_names() -> list[str]:
 
     # get department URLs
     print("Getting department URLs...")
-    page = requests.get(CATALOG_URL)
     dept_url_list = get_dept_url_list(CATALOG_URL)
 
     # find the professors from each department page
