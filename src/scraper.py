@@ -61,13 +61,18 @@ def get_names_from_dept(dept_url: str) -> list[str]:
     faculty_list = []
 
     if text_container:
-        faculty_header = text_container.find(["h2", "h3"], string=FACULTY_MATCH_TEXT)
+        #faculty_header = text_container.find(["h2", "h3"], string=FACULTY_MATCH_TEXT)
 
         # collect names until we hit the next header
-        curr_element = faculty_header.find_next()
-        while (curr_element.get("class") == ["facultylist"]):
+        curr_element = text_container.find_next('p')
+        while curr_element.get("class") == ['facultylist']:
+            # Last element starts with this and is not needed
+            if curr_element.text.startswith("The date in parentheses"):
+                curr_element = curr_element.find_next('p')
+                continue
             faculty_list.append(curr_element.text.split(',')[0])
-            curr_element = curr_element.find_next()
+            print(curr_element.get("class"), curr_element.text)
+            curr_element = curr_element.find_next('p')
 
     return faculty_list
 
