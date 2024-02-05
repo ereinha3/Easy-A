@@ -46,6 +46,7 @@ def get_dept_url_list(catalog_url: str) -> list[str]:
 
     return dept_url_list
 
+
 def get_names_from_dept(dept_url: str) -> list[str]:
     """
     Given the URL to the webpage of a department,
@@ -70,9 +71,10 @@ def get_names_from_dept(dept_url: str) -> list[str]:
 
     return faculty_list
 
-def main() -> None:
+
+def scrape_faculty_names() -> list[str]:
     """
-    Call the web scraper
+    Run the web scraper, scraping all faculty names and returning a list of scraped names.
     """
 
     # get department URLs
@@ -87,10 +89,12 @@ def main() -> None:
         print(url)
         time.sleep(INTERNET_REQUEST_DELAY)
         names_list += get_names_from_dept(url)
-    
-    # (temporary) print all names
-    print(names_list)
+
     print(f"Found a total of {len(names_list)} names")
 
+    return names_list
+
+
 if __name__ == "__main__":
-    main()
+    names_list = scrape_faculty_names()
+    print(names_list)
