@@ -39,8 +39,9 @@ def scraped_names_to_dict(scraped_names: list[str]) -> None:
     """
     scraped_names_dict: dict[str, list[str]] = {}
     for name in scraped_names:
+        name = name.strip()
         # get last word of last name and canonicalize to get dict key
-        last_name = name.split(" ")[-1]
+        last_name = name.strip().split(" ")[-1]
         dict_key = "".join(char.lower() for char in last_name if char.isalpha())
         # append to list stored in dict at key
         if not scraped_names_dict.get(dict_key):
@@ -69,13 +70,20 @@ def _reload_names_dict():
     except ImportError:
         faculty_names = None
 
-def _match_last_name(instructor_name: str, names_dict: dict[str, list[str]]) -> list[str]:
+def _match_last_name(instructor_name: str) -> list[str]:
     """
     This is the initial step for matching a name.
     Given a name from gradedata, find scraped names with the same last name.
     We work off of the last word of the last name (due to double last names).
     """
-    last_names_list = instructor_name.split(",")[0].strip().split(" ")
+    # import faculty_names should be taken care of before calling this
+    global faculty_names
+    names_dict = faculty_names.faculty_names
+
+    if not "," in instructor_name:
+        # do not match name that is not in Last, First order
+        return []
+    last_names_list = instructor_name.strip().split(",")[0].strip().split(" ")
     # get last word of last name and canonicalize for search key
     last_last_name = last_names_list[-1]
 
@@ -93,8 +101,11 @@ def _match_last_name(instructor_name: str, names_dict: dict[str, list[str]]) -> 
     for i in range(len(last_names_list)):
         last_names_list[i] = "".join(char for char in last_names_list[i] if char.isalpha()).lower()
     for candidate_name in names_at_key:
+        candidate_names_list = candidate_name.strip().split(" ")
+        if len(candidate_names_list) == 1:
+            # avoid matchign empty or one-word names
+            continue
         accept_candidate = True
-        candidate_names_list = candidate_name.split(" ")
         for i in range(1, len(last_names_list) + 1):
             # canonicalize candidate names to enable comparison
             candidate_names_list[-i] = "".join(char for char in candidate_names_list[-i] if char.isalpha()).lower()
@@ -116,7 +127,7 @@ def _match_nth_name(instructor_name: str, n: int, candidate_names: list[str]) ->
         return []
 
     # get nth name and canonicalize
-    nth_name = instructor_name.split(",")[1].strip().split(" ")[n]
+    nth_name = instructor_name.strip().split(",")[1].strip().split(" ")[n]
     nth_name = "".join(char for char in nth_name if char.isalpha()).lower()
     # only check initials if full first name not provided
     initial_only = True if len(nth_name) == 1 else False
@@ -127,16 +138,19 @@ def _match_nth_name(instructor_name: str, n: int, candidate_names: list[str]) ->
     # keep list of matching candidate names
     result = []
     for candidate_name in candidate_names:
-        num_candidate_names = len(candidate_name.split(" "))
+        num_candidate_names = len(candidate_name.strip().split(" "))
+        if num_candidate_names <= 1:
+            # avoid matching empty or one-word names
+            continue
         if n >= num_candidate_names - num_last_names:
             # do not reject a candidate for not having nth name
             result.append(candidate_name)
             continue
         # get nth name of candidate name and canonicalize
-        candidate_nth_name = candidate_name.split(" ")[n]
+        candidate_nth_name = candidate_name.strip().split(" ")[n]
         candidate_nth_name = "".join(char for char in candidate_nth_name if char.isalpha()).lower()
         # check for a match
-        if initial_only or len(candidate_nth_name) == 1 and nth_name[0] == candidate_nth_name[0]:
+        if (initial_only or len(candidate_nth_name) == 1) and nth_name[0] == candidate_nth_name[0]:
             # one or both names only have first initial, and the initials match
             result.append(candidate_name)
         elif nth_name == candidate_nth_name:
@@ -158,13 +172,14 @@ def match_name(instructor_name: str) -> list[str]:
         _reload_names_dict()
     if not faculty_names:
         raise Exception("Tried to match name without a valid scraped faculty names dictionary")
-    names_dict = faculty_names.faculty_names
 
+    # do not match name if not in Last, First order
+    if "," not in instructor_name:
+        return []
     # first, filter out by last name
-    candidates = _match_last_name(instructor_name, names_dict)
-    print(candidates)
+    candidates = _match_last_name(instructor_name)
     # then, filter out by given names (first or middle)
-    num_given_names = len(instructor_name.split(",")[1].strip().split(" "))
+    num_given_names = len(instructor_name.strip().split(",")[1].strip().split(" "))
     for n in range(num_given_names):
         candidates = _match_nth_name(instructor_name, n, candidates)
     return candidates

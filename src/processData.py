@@ -4,18 +4,14 @@ Author: Morgan Jones
 The purpose of this file is to intake a gradedata.js file (supplied by daily emerald) and to translate that javascript object into a python dictionary for use by the data access module.
 """
 
+# resolve filepaths from the project src directory
 import context
 
-f = open("./data/gradedata.js", "r")
-data = f.read()
-f.close()
+# modules
+import os
 
-begin = data.index("{")
-end = data.index(";")
-data = data[begin:end]
-
-#Translate the data string into a valid dictionary object.
-courseDict = eval(data)
+# make accessible from all scopes
+global courseDict
 
 def get_course_department(courseName: str) -> str:
     """Parses and returns the department potion of the coursename: i.e. MATH111 -> MATH"""
@@ -33,6 +29,7 @@ def create_grade_dict() -> dict[str, dict[int, list[int]]]:
     """
     Returns a dictionary with heirarchical information by department -> [ courseNumbers ] -> [ courseInstances ].
     """
+    global courseDict
     gradeDict = { get_course_department(key): {} for key in courseDict.keys() }
     for key, value in courseDict.items():
         gradeDict[get_course_department(key)].update({get_course_level(key) : format_course_instance(value, key)})
@@ -44,4 +41,31 @@ def write_dict_to_file(dataName: str, dataBody: dict, filename: str):
     f.write(dataName + " = " + str(dataBody))
     f.close()
 
-write_dict_to_file("gradeDict", create_grade_dict(), "./data/gradeDict.py")
+def process_gradedata():
+    """
+    Perform the whole process of converting gradedata.js into gradeDict.py by calling other functions.
+    Excepts the file ./data/gradedata.js to exist and be valid.
+    """
+    # check that the gradedata.js file is found in the right place
+    if not os.path.exists("./data/gradedata.js"):
+        # alert the user that the new file was not found
+        print("The new grade data file was not found in the correct directory.")
+        exit(1)
+    f = open("./data/gradedata.js", "r")
+    data = f.read()
+    f.close()
+
+    begin = data.index("{")
+    end = data.index(";")
+    data = data[begin:end]
+
+    #Translate the data string into a valid dictionary object.
+    global courseDict
+    courseDict = eval(data)
+
+    write_dict_to_file("gradeDict", create_grade_dict(), "./data/gradeDict.py")
+
+    print("Intake of gradedata.js successful. The program will now use the new grade data.")
+
+if __name__ == "__main__":
+    process_gradedata()
