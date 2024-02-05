@@ -19,13 +19,15 @@ import dataAccess
 
 # modules
 import os
+import importlib
 
 
 def prompt_start():
     """
     Prompt the user to decide which feature of the admin CLI they wish to use.
     """
-    prompt_string = """Welcome to the admin interface. What would you like to do?
+    prompt_string = """
+Welcome to the admin interface. What would you like to do?
 0: Exit the admin tools interface
 1: Overwrite existing grade data using a new file
 2: Overwrite existing faculty names with new internet data
@@ -43,7 +45,7 @@ def run_gradedata_converter():
 {desired_gradedata_path}
 Press enter to proceed: """)
     processData.process_gradedata()
-    exit(0)
+    input("Press enter to return to menu: ")
 
 
 def run_scraper():
@@ -54,7 +56,7 @@ def run_scraper():
     names_list = scraper.scrape_faculty_names()
     nameMatch.scraped_names_to_dict(names_list)
     print("Successfully scraped faculty names. The program will now use this new data when filtering graph results.")
-    exit(0)
+    input("Press enter to return to menu: ")
 
 
 def find_match_discrepancies():
@@ -68,7 +70,10 @@ def find_match_discrepancies():
     # check that faculty_names.py exists and get names from it
     try:
         assert(os.path.exists("./data/faculty_names.py"))
-        from data.faculty_names import faculty_names
+        import data.faculty_names as faculty_names
+        # reload in case web scraper was called earlier during runtime
+        importlib.reload(faculty_names)
+        faculty_names_dict = faculty_names.faculty_names
     except (AssertionError, ImportError):
         print("No scraped faculty names found. Please run the web scraper first.")
         exit(1)
@@ -88,7 +93,7 @@ def find_match_discrepancies():
         gradedata_names_hits[name] = 0
     scraped_names_hits = {}
     # keep number of hits for each scraped name in a dict
-    for name_list in faculty_names.values():
+    for name_list in faculty_names_dict.values():
         for name in name_list:
             scraped_names_hits[name] = 0
 
@@ -152,6 +157,7 @@ def find_match_discrepancies():
     results_file.close()
     print("Saved lists of names for each category to the following path:")
     print(os.path.abspath("./data/name_match_results.py"))
+    input("Press enter to return to menu: ")
 
 def main():
     # prompt next action
