@@ -58,6 +58,19 @@ This command will print a variety of results to the command line:
 It will saved a lists of names for each category to the following file path:
 	***/CS422Group7Project1/src/data/name_match_results.py
 
+4: Update Department List:
+	- Return to main admin tools:
+		This returns to the main admin tools interface
+	- View current departments in the system:
+		This will print a list of all the Natural Science Departments currently considered in the system
+	- Append a department
+		This prompts the user for input of a department name and a department code
+		It will append this name and code as a key value pair to the Natural Science dictionary
+	- Remove a department
+		This prompts the user for input of a department name and will search the ./data/naturalSci.py for a match
+		If no match is found, it will prompt the user again for input, entering 0 will return to admin tools
+
+
 Prior to the use of this program, it is required that you follow the steps outlined in the Installation_Instructions.pdf file. This elucidates the modules needed to compile the program and the Python version support for this project, as well as how to download it. 
 
 #Software Dependencies
