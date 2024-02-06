@@ -302,21 +302,19 @@ def side_by_side_selected() -> None:
     departmentVar.set("")
     enter_student_mode()
 
-def disclaimer_selected():
-    print("Selected")
-    if text.winfo_ismapped():
-        scroll.pack_forget()
-        text.pack_forget()
+def disclaimer_selected() -> None:
+    """Called every time the data info button is pressed.
 
+    Return:
+        None
+    """
+    # If the text box is already on the screen when pressed, remove the textbox
+    if dataInfoText.winfo_ismapped():
+        dataInfoScroll.pack_forget()
+        dataInfoText.pack_forget()
+    # Otherwise add the textbox to the screen
     else:
-        # scroll.pack()
-        text.pack(fill=BOTH, expand=True)
-        # scroll.config(command=text.yview)
-        # text.config(yscrollcommand=scroll.set)
-        # text.insert(END, msg)
-
-
-
+        dataInfoText.pack(fill=BOTH, expand=True)
 
 #------------------------------------------------------------------------------
 # Helper Functions
@@ -439,23 +437,20 @@ mainLabel.pack()
 welcomeFrame = Frame()
 welcomeLabel = Label(
     welcomeFrame,
-    text= '''Welcome to the program!
-    ''',
+    text= '''Welcome to the program!''',
     padding=5,
-    style = "TLabel"
-    )
+    style = "TLabel")
 initLabel = Label(
     welcomeFrame,
     text= '''
-    This program allows for the creation of user generated graphs by selecting input parameters for departments and courses.
-    For additional information, please refer to the README.txt file.
+    This program allows for the creation of user generated graphs by selecting input parameters for departments and courses.\n
+    For additional information, please refer to the README.txt file.\n
     The data used for this project is the conjunction of grade data directly scraped from a published Emerald Media Group file via this url:
-    https://emeraldmediagroup.github.io/grade-data/.
+    https://emeraldmediagroup.github.io/grade-data/.\n
     The faculty data was directly pulled from the UO Course catalog available via this url:
     https://web.archive.org/web/20140901091007/http://catalog.uoregon.edu/arts_sciences/
     ''',
-    padding=5,
-    )
+    padding=5)
 startProgramButton = Button(
     welcomeFrame,
     text="Continue",
@@ -635,7 +630,7 @@ sideBySideButton.pack()
 
 #------------------------------------------------------------------------------
 # Data Source Disclaimer
-msg = """This data was copied on January 18th, 2024. It was copied directly from https://emeraldmediagroup.github.io/grade-data/
+msg = """The data used in this application was copied on January 18th, 2024. It was copied directly from https://emeraldmediagroup.github.io/grade-data/
 
 The data includes courses from from Fall 2013 up to Summer 2016.
 
@@ -661,23 +656,23 @@ The numbers are reflection only of students who received letter grades.
 
 The Emerald omitted the Pass, No Pass and Withdrawls from the data presented in the graphs to display the information in a digestible format."
 """
-disclaimerFrame = Frame(parameterContainerFrame)
+dataInfoFrame = Frame(parameterContainerFrame)
 disclaimerButton = Button(
-    disclaimerFrame, 
+    dataInfoFrame, 
     text="Info About The Data",
     style="S.TButton",
     command=disclaimer_selected)
 
 
-scroll = Scrollbar(disclaimerFrame)
-text = Text(disclaimerFrame)
+dataInfoScroll = Scrollbar(dataInfoFrame)
+dataInfoText = Text(dataInfoFrame)
 
 disclaimerButton.pack()
-disclaimerFrame.pack(fill=BOTH, expand=True, side="bottom")
+dataInfoFrame.pack(fill=BOTH, expand=True, side="bottom")
 
-scroll.config(command=text.yview)
-text.config(yscrollcommand=scroll.set)
-text.insert(END, msg)
+dataInfoScroll.config(command=dataInfoText.yview)
+dataInfoText.config(yscrollcommand=dataInfoScroll.set)
+dataInfoText.insert(END, msg)
 
 #------------------------------------------------------------------------------
 
