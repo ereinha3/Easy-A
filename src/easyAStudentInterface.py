@@ -91,7 +91,7 @@ def enter_student_mode() -> None:
     Returns:
         None
     """
-    mainLabelFrame.pack(fill=BOTH, expand=True, side='top')
+    mainLabelFrame.pack(fill=BOTH, side='top')
 
     # First parameter - pack the parameter container and the department selection frames
     parameterContainerFrame.pack(fill=BOTH, expand=True, side='left')
@@ -423,7 +423,7 @@ graph2Frame = Frame(graphContainerFrame)
 
 #------------------------------------------------------------------------------
 # Main Label
-mainLabelFrame = Frame()
+mainLabelFrame = Frame(window)
 mainLabel = Label(
     mainLabelFrame,
     text="EasyA (or Just Pass) - A Graphing Tool For Comparing Courses and Instructors",
@@ -460,7 +460,7 @@ startProgramButton = Button(
 welcomeLabel.pack()
 initLabel.pack()
 startProgramButton.pack()
-welcomeFrame.pack()
+welcomeFrame.pack(fill=BOTH, expand=True)
 
 #------------------------------------------------------------------------------
 # Department Selection Dropdown Menu Frame
