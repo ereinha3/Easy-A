@@ -1,5 +1,6 @@
 """
 Author: Morgan Jones
+Last Updated: 02/04/2024
 
 The purpose of this file is to intake a gradedata.js file (supplied by daily emerald) and to translate that javascript object into a python dictionary for use by the data access module.
 """

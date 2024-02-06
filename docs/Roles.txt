@@ -1,2 +1,0 @@
-Andrew - Matplotlib
-Morgan - Github and Database integration
