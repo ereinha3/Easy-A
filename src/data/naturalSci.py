@@ -6,6 +6,6 @@ depts_dict = {
     "Human Physiology":"HPHY",
     "Mathematics":"MATH",
     "Physics":"PHYS",
-    "Psychology": "PSY",
+    "Psychology":"PSY",
     "Geography":"GEOG",
 }

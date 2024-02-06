@@ -1,7 +1,7 @@
 """
 Admin Command Line Interface
 2024-02-04
-by ajps
+by ajps, ear
 """
 
 # resolve filepaths relative to project src directory
@@ -16,27 +16,98 @@ import scraper
 import nameMatch
 # for getting set of instructor names for name matching comparison
 import dataAccess
+# for updating department list
+import data.naturalSci
 
 # modules
 import os
 import importlib
 
+NATURAL_SCI_FILEPATH = "./data/naturalSci.py"
 
-def prompt_start():
+def prompt(prompt_string):
     """
     Prompt the user to decide which feature of the admin CLI they wish to use.
     """
-    prompt_string = """
-Welcome to the admin interface. What would you like to do?
-0: Exit the admin tools interface
-1: Overwrite existing grade data using a new file
-2: Overwrite existing faculty names with new internet data
-3: Display information about discrepancies in name matching
-Your choice: """
     user_response = input(prompt_string)
-    while user_response.strip() not in ['0', '1', '2', '3']:
+    while user_response.strip() not in ['0', '1', '2', '3', '4']:
         user_response = input("Invalid choice. Please try again: ")
     return int(user_response)
+
+def update_departments():
+    department_prompt_string = """
+You may now append or remove a department from the list. 
+If appending the department, please navigate to the instructions available in User_Instructions.pdf.
+What would you like to do?
+0: Return to main admin tools
+1: View current departments in the system
+2: Append a department
+3: Remove a department
+Your choice: """
+    dept_input = prompt(department_prompt_string)
+    while dept_input:
+        if dept_input == 1:
+            print()
+            print("Departments in System:")
+            for key in data.naturalSci.depts_dict.keys():
+                print(key)
+        if dept_input == 2:
+            dept_add_prompt_string = """Please provide the name of the department you would like to add. 
+Please be careful of spelling. 0 to exit. """
+            dept_name = input(dept_add_prompt_string)
+            if dept_name == '0':
+                return
+            department_code_prompt_string = "Please provide the corresponding department code. "
+            dept_code = input(department_code_prompt_string).upper()
+            if dept_code == '0':
+                return
+            f = open(NATURAL_SCI_FILEPATH, 'ab+')
+            f.seek(-1, 2)
+            f.truncate()
+            f = open(NATURAL_SCI_FILEPATH, 'a')
+            new_line = '    ' + f'"{dept_name}"' + ':' + f'"{dept_code}"' + ',\n}'
+            f.write(new_line)
+            f.close()
+        if dept_input == 3:
+            dept_remove_prompt_string = "Please provide the name of the department you would like to remove or 0 to exit (Please be careful of spelling and capitaliztaion): "
+            dept_remove_input = input(dept_remove_prompt_string).strip()
+            truth = 1
+            count = 0
+            while truth:
+                if dept_remove_input == '0':
+                    return
+                f = open(NATURAL_SCI_FILEPATH, 'r')
+                line = f.readline()
+                while line:
+                    print(line, count)
+                    if dept_remove_input in line:
+                        truth = 0
+                        break
+                    line = f.readline()
+                    count += 1
+                f.close()
+                if truth:
+                    dept_remove_input = input("Department not found. Please try again: ").strip()
+                print(dept_remove_input)
+            f = open(NATURAL_SCI_FILEPATH, 'r')
+            line = f.readline()
+            bytes = 0
+            index = None
+            while line:
+                if dept_remove_input in line:
+                    index = (bytes, bytes+len(line))
+                bytes += len(line)
+                line = f.readline()
+            f = open(NATURAL_SCI_FILEPATH, 'r')
+            file = f.read()
+            f.close()
+            new_file = open(NATURAL_SCI_FILEPATH, 'w')
+            new_file_chars = file[:index[0]]+file[index[1]:]
+            new_file.write(new_file_chars)
+            new_file.close()
+        dept_input = prompt(department_prompt_string)
+    return
+
 
 
 def run_gradedata_converter():
@@ -161,8 +232,17 @@ def find_match_discrepancies():
 
 def main():
     # prompt next action
-    choice = prompt_start()
+    prompt_string = """
+Welcome to the admin interface. What would you like to do?
+0: Exit the admin tools interface
+1: Overwrite existing grade data using a new file
+2: Overwrite existing faculty names with new internet data
+3: Display information about discrepancies in name matching
+4: Update departments list
+Your choice: """
+    choice = prompt(prompt_string)
     # decide what to do based on user response
+    
     while choice:
         if choice == 1:
             run_gradedata_converter()
@@ -170,7 +250,9 @@ def main():
             run_scraper()
         elif choice == 3:
             find_match_discrepancies()
-        choice = prompt_start()
+        elif choice == 4:
+            update_departments()
+        choice = prompt(prompt_string)
     exit(0)
 
 
