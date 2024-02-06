@@ -17,7 +17,6 @@ Darby W. (daw)
 """
 from tkinter import *
 from tkinter.ttk import *
-
 import dataAccess as access
 import data.naturalSci as naturalSci
 import graphFramePacker
@@ -48,11 +47,6 @@ style.configure(
     'B.TButton',
     font = ('calibri', 18, 'bold', 'underline'),
     foreground = 'blue')
-
-style.configure(
-    'S.TButton',
-    font = ('calibri', 10, 'underline'),
-    fg = 'blue')
 
 # Generic Label Style
 style.configure(
@@ -301,22 +295,6 @@ def side_by_side_selected() -> None:
 
     departmentVar.set("")
     enter_student_mode()
-
-def disclaimer_selected():
-    print("Selected")
-    if text.winfo_ismapped():
-        scroll.pack_forget()
-        text.pack_forget()
-
-    else:
-        # scroll.pack()
-        text.pack(fill=BOTH, expand=True)
-        # scroll.config(command=text.yview)
-        # text.config(yscrollcommand=scroll.set)
-        # text.insert(END, msg)
-
-
-
 
 #------------------------------------------------------------------------------
 # Helper Functions
@@ -632,52 +610,6 @@ sideBySideButton = Button(
 
 clearGraphsButton.pack()
 sideBySideButton.pack()
-
-#------------------------------------------------------------------------------
-# Data Source Disclaimer
-msg = """This data was copied on January 18th, 2024. It was copied directly from https://emeraldmediagroup.github.io/grade-data/
-
-The data includes courses from from Fall 2013 up to Summer 2016.
-
-Data Redaction Info (From the Daily Emerald):
-"If your class doesn't show up here, it means the data was redacted.
-
-Data from 67 percent of the 48,309 classes was redacted by the UO Public Records Office and is not displayed here. Upon inquiry about the removed data, the office cited three conditions which must be met in order to release grade data without violating student privacy via the Family Educational Rights and Privacy Act (FERPA).
-
-
-The numbers are reflection only of students who received letter grades.
-
-
-1) The actual class enrollment must be greater than or equal to ten students
-
-
-2) All students in the class do not receive the same grade.
-
-
-3) A person would need to figure out the grades of at least six students in the class to deduce the grades of other students. (In other words, a class redacted for this reason — whether a class of 10 or 300 — awarded every student the same grade except for five or fewer students.)
-
-
-27,013 classes were redacted solely for the first condition. 5,737 classes were redacted because of the second two conditions.
-
-The Emerald omitted the Pass, No Pass and Withdrawls from the data presented in the graphs to display the information in a digestible format."
-"""
-disclaimerFrame = Frame(parameterContainerFrame)
-disclaimerButton = Button(
-    disclaimerFrame, 
-    text="Info About The Data",
-    style="S.TButton",
-    command=disclaimer_selected)
-
-
-scroll = Scrollbar(disclaimerFrame)
-text = Text(disclaimerFrame)
-
-disclaimerButton.pack()
-disclaimerFrame.pack(fill=BOTH, expand=True, side="bottom")
-
-scroll.config(command=text.yview)
-text.config(yscrollcommand=scroll.set)
-text.insert(END, msg)
 
 #------------------------------------------------------------------------------
 
